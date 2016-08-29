@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.me.caec.activity.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fl_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#cdcdcd" />
+
+    <RadioGroup
+        android:id="@+id/rg_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <RadioButton
+            android:id="@+id/rb_home"
+            style="@style/FooterItemStyle"
+            android:checked="true"
+            android:drawableTop="@drawable/selector_footer_home"
+            android:text="首页" />
+
+        <RadioButton
+            android:id="@+id/rb_class"
+            style="@style/FooterItemStyle"
+            android:drawableTop="@drawable/selector_footer_class"
+            android:text="分类" />
+
+        <RadioButton
+            android:id="@+id/rb_activity"
+            style="@style/FooterItemStyle"
+            android:drawableTop="@drawable/selector_footer_activity"
+            android:text="活动" />
+
+        <RadioButton
+            android:id="@+id/rb_cart"
+            style="@style/FooterItemStyle"
+            android:drawableTop="@drawable/selector_footer_cart"
+            android:text="购物车" />
+
+        <RadioButton
+            android:id="@+id/rb_my"
+            style="@style/FooterItemStyle"
+            android:drawableTop="@drawable/selector_footer_my"
+            android:text="我的" />
+    </RadioGroup>
+</LinearLayout>
