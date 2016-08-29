@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.transition.Transition;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.fragment.ActivityFragment;
@@ -23,6 +24,8 @@ import org.xutils.x;
 
 import java.security.PolicySpi;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 主页面
@@ -45,9 +48,14 @@ public class MainActivity extends FragmentActivity {
     //当前选中的fragment
     private BaseFragment currentFragment;
 
+    //返回键点击次数
+    private int flagBackCount;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        x.view().inject(this);
 
         //第一次进来时跳向GuideActivity
         Boolean isFirstEnter = PreferencesUtils.getBoolean(getApplicationContext(), "isFirstEnter", true);
@@ -57,13 +65,11 @@ public class MainActivity extends FragmentActivity {
             return;
         }
 
-        setContentView(R.layout.activity_main);
-        x.view().inject(this);
         initView();
     }
 
     private void initView() {
-        initFragment(0);    //初始化默认选中的首页
+        initFragment(R.id.rb_home);    //初始化默认选中的首页
 
         //给footer设置改变的监听事件
         rgFooter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -77,7 +83,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * 初始化footer对应的fragment
      */
-    private void initFragment(int position) {
+    private void initFragment(int id) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transition = fm.beginTransaction();
 
@@ -85,8 +91,8 @@ public class MainActivity extends FragmentActivity {
             transition.hide(currentFragment);
         }
 
-        switch (position) {
-            case 0:
+        switch (id) {
+            case R.id.rb_home:
                 if (homeFragment == null) {
                     homeFragment = new HomeFragment();
                     transition.add(R.id.fl_content, homeFragment);
@@ -95,7 +101,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 currentFragment = homeFragment;
                 break;
-            case 1:
+            case R.id.rb_class:
                 if (classFragment == null) {
                     classFragment = new ClassFragment();
                     transition.add(R.id.fl_content, classFragment);
@@ -104,7 +110,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 currentFragment = classFragment;
                 break;
-            case 2:
+            case R.id.rb_activity:
                 if (activityFragment == null) {
                     activityFragment = new ActivityFragment();
                     transition.add(R.id.fl_content, activityFragment);
@@ -113,7 +119,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 currentFragment = activityFragment;
                 break;
-            case 3:
+            case R.id.rb_cart:
                 if (cartFragment == null) {
                     cartFragment = new CartFragment();
                     transition.add(R.id.fl_content, cartFragment);
@@ -122,7 +128,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 currentFragment = cartFragment;
                 break;
-            case 4:
+            case R.id.rb_my:
                 if (myFragment == null) {
                     myFragment = new MyFragment();
                     transition.add(R.id.fl_content, myFragment);
@@ -136,5 +142,22 @@ public class MainActivity extends FragmentActivity {
         }
 
         transition.commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (flagBackCount < 1) {
+            flagBackCount++;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    flagBackCount = 0;
+                }
+            }, 2500);
+            Toast.makeText(this, "再次点击退出应用", Toast.LENGTH_SHORT).show();
+        } else {
+            finish();
+        }
     }
 }
