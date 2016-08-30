@@ -3,38 +3,37 @@ package com.me.caec.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.xutils.x;
+
 /**
- * 首页
+ * 基类
  * Created by yin on 2016/8/29.
  */
-public abstract class BaseFragment extends Fragment {
+public class BaseFragment extends Fragment {
 
-    //根view
-    private View rootView;
+    private boolean injected = false;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = initView(inflater, container);
-        return rootView;
+        injected = true;
+        return x.view().inject(this, inflater, container);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        if (!injected) {
+            x.view().inject(this, this.getView());
+        }
         initData();
     }
 
-    public abstract View initView(LayoutInflater inflater, ViewGroup container);
-
     public void initData() {
 
-    }
-
-    public View getRootView() {
-        return rootView;
     }
 }

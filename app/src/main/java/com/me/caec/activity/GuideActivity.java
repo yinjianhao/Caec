@@ -17,6 +17,7 @@ import com.me.caec.utils.DpTransforUtils;
 import com.me.caec.utils.PreferencesUtils;
 
 import org.xutils.image.ImageOptions;
+import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
@@ -55,6 +56,7 @@ public class GuideActivity extends AppCompatActivity {
      */
     private void initView() {
         vpGuide.setAdapter(new GuidePagerAdapter());
+
         vpGuide.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

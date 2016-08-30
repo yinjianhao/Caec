@@ -56,15 +56,6 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         x.view().inject(this);
-
-        //第一次进来时跳向GuideActivity
-        Boolean isFirstEnter = PreferencesUtils.getBoolean(getApplicationContext(), "isFirstEnter", true);
-        if (isFirstEnter) {
-            startActivity(new Intent(this, GuideActivity.class));
-            finish();
-            return;
-        }
-
         initView();
     }
 
@@ -144,6 +135,9 @@ public class MainActivity extends FragmentActivity {
         transition.commit();
     }
 
+    /**
+     * 返回键
+     */
     @Override
     public void onBackPressed() {
         if (flagBackCount < 1) {

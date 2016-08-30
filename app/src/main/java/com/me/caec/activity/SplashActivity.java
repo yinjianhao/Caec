@@ -22,9 +22,18 @@ public class SplashActivity extends AppCompatActivity {
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case FLAG_GO_HOME:
-                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    //第一次进来时跳向GuideActivity
+                    Boolean isFirstEnter = PreferencesUtils.getBoolean(getApplicationContext(), "isFirstEnter", true);
+                    Intent intent;
+                    if (isFirstEnter) {
+                        intent = new Intent(SplashActivity.this, GuideActivity.class);
+                        startActivity(intent);
+                    } else {
+                        intent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
                     finish();
+                    break;
             }
             return false;
         }
