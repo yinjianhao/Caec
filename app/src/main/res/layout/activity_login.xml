@@ -52,6 +52,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="@drawable/background_white"
                 android:hint="手机号"
                 android:inputType="phone" />
 
@@ -79,6 +80,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:background="@drawable/background_white"
                 android:hint="密码"
                 android:inputType="textPassword" />
         </LinearLayout>

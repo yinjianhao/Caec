@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.activity.LoginActivity;
@@ -16,8 +17,6 @@ import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
-
-import java.util.Objects;
 
 /**
  * 我的
@@ -86,5 +85,65 @@ public class MyFragment extends BaseFragment {
     @Event(R.id.tv_login)
     private void onLoginClick(View view) {
         startActivity(new Intent(getActivity(), LoginActivity.class));
+    }
+
+    //我的订单
+    @Event(R.id.tv_order)
+    private void onOrderClick(View view) {
+
+    }
+
+    //待付款
+    @Event(R.id.rl_unpaid)
+    private void onUnpaidOrderClick(View view) {
+
+    }
+
+    //待提车
+    @Event(R.id.rl_uncar)
+    private void onUncarOrderClick(View view) {
+
+    }
+
+    //待收货
+    @Event(R.id.rl_unreceipt)
+    private void onUnreceiptOrderClick(View view) {
+
+    }
+
+    //待评价
+    @Event(R.id.rl_comment)
+    private void onCommentOrderClick(View view) {
+
+    }
+
+    //售后
+    @Event(R.id.rl_service)
+    private void onServiceOrderClick(View view) {
+
+    }
+
+    //收货地址
+    @Event(R.id.tv_address)
+    private void onAddressClick(View view) {
+
+    }
+
+    //足迹
+    @Event(R.id.tv_foot)
+    private void onFootClick(View view) {
+        Toast.makeText(getActivity(), "足迹", Toast.LENGTH_SHORT).show();
+    }
+
+    //客服
+    @Event(R.id.tv_custom)
+    private void onCustomClick(View view) {
+        Toast.makeText(getActivity(), "客服", Toast.LENGTH_SHORT).show();
+    }
+
+    //关于
+    @Event(R.id.tv_about)
+    private void onAboutClick(View view) {
+        Toast.makeText(getActivity(), "关于", Toast.LENGTH_SHORT).show();
     }
 }

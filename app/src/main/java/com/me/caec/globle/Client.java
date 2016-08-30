@@ -13,4 +13,7 @@ public class Client {
 
     //注册
 //    public static final String LOGIN_URL = SERVICE_URL + "/main/user/login";
+
+    //用户信息
+    public static final String USER_INFO_URL = SERVICE_URL + "/member/user/info";
 }

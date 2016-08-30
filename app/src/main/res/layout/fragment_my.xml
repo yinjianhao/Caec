@@ -68,10 +68,11 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/tv_order"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginTop="10dp"
-        android:background="#fff"
+        android:background="@drawable/selector_background_press_gray"
         android:drawableEnd="@drawable/ic_action_next_item"
         android:drawableRight="@drawable/ic_action_next_item"
         android:gravity="center_vertical"
@@ -89,15 +90,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#fff"
-        android:orientation="horizontal"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp">
+        android:orientation="horizontal">
 
         <RelativeLayout
+            android:id="@+id/rl_unpaid"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/selector_background_press_gray"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <ImageView
                 android:id="@+id/iv_unpaid"
@@ -131,10 +134,14 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_uncar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/selector_background_press_gray"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <ImageView
                 android:id="@+id/iv_uncar"
@@ -168,10 +175,14 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_unreceipt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/selector_background_press_gray"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <ImageView
                 android:id="@+id/iv_unreceipt"
@@ -205,10 +216,14 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_comment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/selector_background_press_gray"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <ImageView
                 android:id="@+id/iv_comment"
@@ -242,10 +257,14 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_service"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:background="@drawable/selector_background_press_gray"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
             <ImageView
                 android:id="@+id/iv_service"
@@ -280,10 +299,11 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_address"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginTop="10dp"
-        android:background="#fff"
+        android:background="@drawable/selector_background_press_gray"
         android:drawableEnd="@drawable/ic_action_next_item"
         android:drawableRight="@drawable/ic_action_next_item"
         android:gravity="center_vertical"
@@ -298,9 +318,10 @@
         android:background="@color/border" />
 
     <TextView
+        android:id="@+id/tv_foot"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="#fff"
+        android:background="@drawable/selector_background_press_gray"
         android:drawableEnd="@drawable/ic_action_next_item"
         android:drawableRight="@drawable/ic_action_next_item"
         android:gravity="center_vertical"
@@ -315,9 +336,10 @@
         android:background="@color/border" />
 
     <TextView
+        android:id="@+id/tv_custom"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="#fff"
+        android:background="@drawable/selector_background_press_gray"
         android:drawableEnd="@drawable/ic_action_next_item"
         android:drawableRight="@drawable/ic_action_next_item"
         android:gravity="center_vertical"
@@ -332,9 +354,10 @@
         android:background="@color/border" />
 
     <TextView
+        android:id="@+id/tv_about"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="#fff"
+        android:background="@drawable/selector_background_press_gray"
         android:drawableEnd="@drawable/ic_action_next_item"
         android:drawableRight="@drawable/ic_action_next_item"
         android:gravity="center_vertical"

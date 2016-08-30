@@ -40,4 +40,14 @@ public class PreferencesUtils {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
         sharedPreferences.edit().putBoolean(key, value).apply();
     }
+
+    public static int getInt(Context ctx, String key, int defaultValue) {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(key, defaultValue);
+    }
+
+    public static void setInt(Context ctx, String key, int value) {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
+        sharedPreferences.edit().putInt(key, value).apply();
+    }
 }

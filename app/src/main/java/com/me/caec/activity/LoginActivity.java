@@ -93,8 +93,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         //保存用户信息
                         PreferencesUtils.setString(LoginActivity.this, "token", data.getString("token"));
-                        PreferencesUtils.setString(LoginActivity.this, "nickName", data.getString("nickname"));
                         PreferencesUtils.setString(LoginActivity.this, "mobile", data.getString("mobile"));
+                        PreferencesUtils.setString(LoginActivity.this, "nickName", data.getString("nickname"));
                         PreferencesUtils.setString(LoginActivity.this, "headImgUrl", data.getString("img"));
                         finish();
                     }
