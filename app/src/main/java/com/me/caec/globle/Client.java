@@ -11,9 +11,18 @@ public class Client {
     //登录
     public static final String LOGIN_URL = SERVICE_URL + "/main/user/login";
 
-    //注册
-//    public static final String LOGIN_URL = SERVICE_URL + "/main/user/login";
-
     //用户信息
     public static final String USER_INFO_URL = SERVICE_URL + "/member/user/info";
+
+    //验证手机是否注册
+    public static final String PHONE_ISREGISTER_URL = SERVICE_URL + "/main/auth/phone";
+
+    //图片验证码
+    public static final String IMAGE_CODE_URL = SERVICE_URL + "/main/auth/picCode";
+
+    //验证图片验证码
+    public static final String CHECK_IMAGE_CODE_URL = SERVICE_URL + "/main/auth/checkPicCode";
+
+    //忘记密码
+    public static final String FORGET_PSD_URL = SERVICE_URL + "/member/user/forget";
 }

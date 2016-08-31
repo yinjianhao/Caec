@@ -1,16 +1,19 @@
 package com.me.caec.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.view.ConfirmDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +23,7 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
-public class UserInfoActivity extends AppCompatActivity {
+public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
     @ViewInject(R.id.iv_head)
     private ImageView ivHead;
@@ -37,6 +40,15 @@ public class UserInfoActivity extends AppCompatActivity {
     @ViewInject(R.id.tv_birthday)
     private TextView tvBirthday;
 
+    @ViewInject(R.id.tv_title)
+    private TextView tvTitle;
+
+    @ViewInject(R.id.btn_back)
+    private LinearLayout tvBack;
+
+    @ViewInject(R.id.tv_login_out)
+    private TextView tvLoginOut;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +60,10 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private void initView() {
         getUserInfo();
+
+        tvTitle.setText("个人信息");
+        tvBack.setOnClickListener(this);
+        tvLoginOut.setOnClickListener(this);
     }
 
     private void getUserInfo() {
@@ -96,8 +112,41 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
-    @Event(R.id.btn_back)
-    private void onBackClick(View view) {
-        finish();
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_back:
+                finish();
+                break;
+            case R.id.tv_login_out:
+                loginOut();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void loginOut() {
+        ConfirmDialog dialog = new ConfirmDialog(UserInfoActivity.this);
+        dialog.setBody("是否退出登录?");
+        dialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
+            @Override
+            public void confirm() {
+                PreferencesUtils.removeInt(UserInfoActivity.this, "sex");
+                PreferencesUtils.removeString(UserInfoActivity.this, "birthday");
+                PreferencesUtils.removeString(UserInfoActivity.this, "mobile");
+                PreferencesUtils.removeString(UserInfoActivity.this, "nickName");
+                PreferencesUtils.removeString(UserInfoActivity.this, "headImgUrl");
+                PreferencesUtils.removeString(UserInfoActivity.this, "token");
+                startActivity(new Intent(UserInfoActivity.this, LoginActivity.class));
+                finish();
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+        });
+        dialog.show();
     }
 }

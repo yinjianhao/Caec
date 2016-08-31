@@ -31,6 +31,11 @@ public class PreferencesUtils {
         sharedPreferences.edit().putString(key, value).apply();
     }
 
+    public static void removeString(Context ctx, String key) {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
+        sharedPreferences.edit().remove(key).apply();
+    }
+
     public static Boolean getBoolean(Context ctx, String key, Boolean defaultValue) {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(key, defaultValue);
@@ -41,6 +46,11 @@ public class PreferencesUtils {
         sharedPreferences.edit().putBoolean(key, value).apply();
     }
 
+    public static void removeBoolean(Context ctx, String key) {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
+        sharedPreferences.edit().remove(key).apply();
+    }
+
     public static int getInt(Context ctx, String key, int defaultValue) {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
         return sharedPreferences.getInt(key, defaultValue);
@@ -49,5 +59,10 @@ public class PreferencesUtils {
     public static void setInt(Context ctx, String key, int value) {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
         sharedPreferences.edit().putInt(key, value).apply();
+    }
+
+    public static void removeInt(Context ctx, String key) {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(NAME_SPACE, Context.MODE_PRIVATE);
+        sharedPreferences.edit().remove(key).apply();
     }
 }
