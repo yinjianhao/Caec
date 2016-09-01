@@ -1,10 +1,10 @@
 package com.me.caec.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -23,8 +23,6 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
-
-import java.util.Timer;
 
 public class ForgetPsdActivity2 extends AppCompatActivity implements View.OnClickListener {
 

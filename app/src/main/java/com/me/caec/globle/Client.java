@@ -37,4 +37,7 @@ public class Client {
 
     //验证短信验证码
     public static final String CHECK_MSG_CODE_URL = SERVICE_URL + "/main/auth/checkSMSCode";
+
+    //获取收货地址列表
+    public static final String ADDRESS_LIST_URL = SERVICE_URL + "/member/receiving/list";
 }

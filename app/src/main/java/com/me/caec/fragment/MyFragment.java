@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
+import com.me.caec.activity.AddressListActivity;
 import com.me.caec.activity.LoginActivity;
 import com.me.caec.activity.UserInfoActivity;
 import com.me.caec.utils.LoginUtils;
@@ -130,7 +131,7 @@ public class MyFragment extends BaseFragment {
     //收货地址
     @Event(R.id.tv_address)
     private void onAddressClick(View view) {
-
+        startActivity(new Intent(getActivity(), AddressListActivity.class));
     }
 
     //足迹
