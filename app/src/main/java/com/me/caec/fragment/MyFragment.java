@@ -60,15 +60,19 @@ public class MyFragment extends BaseFragment {
         //判断登录
         if (LoginUtils.isLogin(getActivity())) {
             String nickName = PreferencesUtils.getString(getActivity(), "nickName", "");
-            String mobile = PreferencesUtils.getString(getActivity(), "mobile", "");
+            String phone = PreferencesUtils.getString(getActivity(), "phone", "");
             String headImgUrl = PreferencesUtils.getString(getActivity(), "headImgUrl", "");
 
             tvLogin.setVisibility(View.GONE);
             llUserInfo.setVisibility(View.VISIBLE);
 
             x.image().bind(ivHead, headImgUrl);
-            tvAccount.setText(mobile);
+            tvAccount.setText(phone);
             tvName.setText(nickName);
+        } else {
+            ivHead.setImageResource(R.drawable.user_photo);
+            tvLogin.setVisibility(View.VISIBLE);
+            llUserInfo.setVisibility(View.GONE);
         }
     }
 

@@ -8,6 +8,9 @@ public class Client {
     //服务器根地址
     public static final String SERVICE_URL = "http://61.186.243.111";
 
+    //注册
+    public static final String REGISTER_URL = SERVICE_URL + "/main/user/register";
+
     //登录
     public static final String LOGIN_URL = SERVICE_URL + "/main/user/login";
 
@@ -23,6 +26,15 @@ public class Client {
     //验证图片验证码
     public static final String CHECK_IMAGE_CODE_URL = SERVICE_URL + "/main/auth/checkPicCode";
 
+    //修改密码
+    public static final String MODIFY_PSD_URL = SERVICE_URL + "/member/user/password";
+
     //忘记密码
     public static final String FORGET_PSD_URL = SERVICE_URL + "/member/user/forget";
+
+    //发送短信验证码
+    public static final String MSG_CODE_URL = SERVICE_URL + "/main/auth/sendSMSCode";
+
+    //验证短信验证码
+    public static final String CHECK_MSG_CODE_URL = SERVICE_URL + "/main/auth/checkSMSCode";
 }

@@ -26,7 +26,10 @@
         <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.ForgetPsdActivity" />
-        <activity android:name=".activity.ForgetPsdActivity2"></activity>
+        <activity android:name=".activity.ForgetPsdActivity2" />
+        <activity android:name=".activity.ForgetPsdActivity3" />
+        <activity android:name=".activity.ModifyPsdActivity" />
+        <activity android:name=".activity.ModifyPsdActivity2"></activity>
     </application>
 
 </manifest>

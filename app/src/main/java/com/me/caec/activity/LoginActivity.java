@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
@@ -28,6 +30,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private final String TAG = "LoginActivity";
 
+    @ViewInject(R.id.tv_title)
+    private TextView tvTitle;
+
     @ViewInject(R.id.et_phone)
     private EditText etPhone;
 
@@ -44,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initView() {
-
+        tvTitle.setText("登录");
     }
 
     //登录
@@ -93,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         //保存用户信息
                         PreferencesUtils.setString(LoginActivity.this, "token", data.getString("token"));
-                        PreferencesUtils.setString(LoginActivity.this, "mobile", data.getString("mobile"));
+                        PreferencesUtils.setString(LoginActivity.this, "phone", data.getString("mobile"));
                         PreferencesUtils.setString(LoginActivity.this, "nickName", data.getString("nickname"));
                         PreferencesUtils.setString(LoginActivity.this, "headImgUrl", data.getString("img"));
                         finish();

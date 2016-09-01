@@ -49,6 +49,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     @ViewInject(R.id.tv_login_out)
     private TextView tvLoginOut;
 
+    @ViewInject(R.id.ll_modify)
+    private LinearLayout llModify;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         tvTitle.setText("个人信息");
         tvBack.setOnClickListener(this);
         tvLoginOut.setOnClickListener(this);
+        llModify.setOnClickListener(this);
     }
 
     private void getUserInfo() {
@@ -80,7 +84,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                         JSONObject data = jsonObject.getJSONObject("data");
                         PreferencesUtils.setInt(UserInfoActivity.this, "sex", data.getInt("sex"));
                         PreferencesUtils.setString(UserInfoActivity.this, "birthday", data.getString("birthday"));
-                        PreferencesUtils.setString(UserInfoActivity.this, "mobile", data.getString("mobile"));
+                        PreferencesUtils.setString(UserInfoActivity.this, "phone", data.getString("mobile"));
                         PreferencesUtils.setString(UserInfoActivity.this, "nickName", data.getString("nickName"));
                         PreferencesUtils.setString(UserInfoActivity.this, "headImgUrl", data.getString("img"));
 
@@ -121,6 +125,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.tv_login_out:
                 loginOut();
                 break;
+            case R.id.ll_modify:
+                startActivity(new Intent(this, ModifyPsdActivity.class));
+                break;
             default:
                 break;
         }
@@ -134,7 +141,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             public void confirm() {
                 PreferencesUtils.removeInt(UserInfoActivity.this, "sex");
                 PreferencesUtils.removeString(UserInfoActivity.this, "birthday");
-                PreferencesUtils.removeString(UserInfoActivity.this, "mobile");
+                PreferencesUtils.removeString(UserInfoActivity.this, "phone");
                 PreferencesUtils.removeString(UserInfoActivity.this, "nickName");
                 PreferencesUtils.removeString(UserInfoActivity.this, "headImgUrl");
                 PreferencesUtils.removeString(UserInfoActivity.this, "token");
@@ -148,5 +155,15 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         dialog.show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        String token = PreferencesUtils.getString(this, "token", "");
+        if (token.isEmpty()) {
+            finish();
+        }
     }
 }

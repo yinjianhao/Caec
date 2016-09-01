@@ -1,8 +1,8 @@
 package com.me.caec.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -15,13 +15,11 @@ import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.globle.Client;
-import com.me.caec.utils.PreferencesUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
-import org.xutils.image.ImageOptions;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
@@ -51,6 +49,9 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
     //能否下一步
     private boolean nextEnable;
 
+    //手机号正则
+    private String phoneRule = "^1\\d{10}$";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +78,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void afterTextChanged(Editable s) {
-                String rule = "^1\\d{10}$";
-                if (s.toString().matches(rule)) {
+                if (s.toString().matches(phoneRule)) {
                     checkIsRegister(s.toString());
                 }
             }
@@ -97,7 +97,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.toString().length() == 4) {
+                if (s.length() == 4) {
                     checkImageCode();
                 } else if (nextEnable) {
                     setNextEnable(false);
@@ -112,7 +112,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
     /**
      * 检查是否已注册
      */
-    private void checkIsRegister(String phone) {
+    private void checkIsRegister(final String phone) {
         RequestParams params = new RequestParams(Client.PHONE_ISREGISTER_URL);
         params.addQueryStringParameter("phone", phone);
 
@@ -149,6 +149,9 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    /**
+     * 验证图片验证码
+     */
     private void checkImageCode() {
         RequestParams params = new RequestParams(Client.CHECK_IMAGE_CODE_URL);
         params.addQueryStringParameter("phone", etPhone.getText().toString());
@@ -175,7 +178,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -217,6 +220,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
                 if (nextEnable) {
                     Intent i = new Intent(this, ForgetPsdActivity2.class);
                     i.putExtra("phone", etPhone.getText().toString());
+                    i.putExtra("imgCode", etCode.getText().toString());
                     startActivity(i);
                     finish();
                 }
@@ -228,6 +232,10 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
 
     private void getImageCode() {
         String phone = etPhone.getText().toString();
-        x.image().bind(ivCode, Client.IMAGE_CODE_URL + "?phone=" + phone + "&_=" + Math.random());
+        if(phoneRule.matches(phone)) {
+            x.image().bind(ivCode, Client.IMAGE_CODE_URL + "?phone=" + phone + "&_=" + Math.random());
+        } else {
+            Toast.makeText(this, "请输入正确的手机号码", Toast.LENGTH_SHORT).show();
+        }
     }
 }
