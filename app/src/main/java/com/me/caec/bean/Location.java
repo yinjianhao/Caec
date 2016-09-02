@@ -34,7 +34,7 @@ public class Location {
         private int areaid;
         private String areaname;
 
-        private List<AlBean> al;
+        private List<CityBean> al;
 
         public int getAreaid() {
             return areaid;
@@ -52,15 +52,15 @@ public class Location {
             this.areaname = areaname;
         }
 
-        public List<AlBean> getAl() {
+        public List<CityBean> getAl() {
             return al;
         }
 
-        public void setAl(List<AlBean> al) {
+        public void setAl(List<CityBean> al) {
             this.al = al;
         }
 
-        public static class AlBean {
+        public static class CityBean {
             private int areaid;
             private String areaname;
 

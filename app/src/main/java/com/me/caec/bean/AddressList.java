@@ -1,5 +1,6 @@
 package com.me.caec.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class AddressList {
         this.data = data;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
         private String provinceId;
         private String id;
         private String zip;

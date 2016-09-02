@@ -40,4 +40,13 @@ public class Client {
 
     //获取收货地址列表
     public static final String ADDRESS_LIST_URL = SERVICE_URL + "/member/receiving/list";
+
+    //删除收货地址
+    public static final String DELETE_ADDRESS_URL = SERVICE_URL + "/member/receiving/delete";
+
+    //新建收货地址
+    public static final String CREATE_ADDRESS_URL = SERVICE_URL + "/member/receiving/new";
+
+    //修改收货地址
+    public static final String EDIT_ADDRESS_URL = SERVICE_URL + "/member/receiving/edit";
 }

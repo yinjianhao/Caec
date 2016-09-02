@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:background="@drawable/selector_background_press_gray"
+    android:background="#fff"
     android:paddingBottom="10dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
@@ -59,25 +58,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line"
-        android:layout_marginTop="17dp" />
+        android:layout_marginTop="10dp"
+        android:text="设为默认地址"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/line"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="17dp"
-        android:layout_toEndOf="@+id/cb_check"
-        android:layout_toRightOf="@+id/cb_check"
-        android:text="设为默认地址"
-        android:textSize="16sp" />
+    <Button
+        android:id="@+id/btn_delete"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="64dp"
+        android:layout_height="29dp"
+        android:layout_alignBaseline="@+id/cb_check"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/selector_btn_border_normal"
+        android:text="删除" />
 
     <Button
         android:id="@+id/btn_edit"
+        style="?android:attr/borderlessButtonStyle"
         android:layout_width="64dp"
         android:layout_height="29dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBaseline="@+id/cb_check"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:layout_toLeftOf="@+id/btn_delete"
@@ -85,13 +85,5 @@
         android:background="@drawable/selector_btn_border_normal"
         android:text="编辑" />
 
-    <Button
-        android:id="@+id/btn_delete"
-        android:layout_width="64dp"
-        android:layout_height="29dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/selector_btn_border_normal"
-        android:text="删除" />
+
 </RelativeLayout>

@@ -1,7 +1,9 @@
 package com.me.caec.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,7 +20,10 @@ import com.me.caec.R;
 import com.me.caec.bean.AddressList;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.view.ConfirmDialog;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.ViewInject;
@@ -57,6 +62,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
     private void initView() {
         tvTitle.setText("收货地址管理");
         tvBack.setOnClickListener(this);
+        btnNew.setOnClickListener(this);
 
         getAddressList();
     }
@@ -67,10 +73,16 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
             case R.id.btn_back:
                 finish();
                 break;
+            case R.id.btn_new:
+                Intent i = new Intent(AddressListActivity.this, CreateAddressActivity.class);
+                i.putExtra("type", CreateAddressActivity.FLAG_ADDRESS_CREATE);
+                startActivity(i);
+                break;
             default:
                 break;
         }
     }
+
 
     /**
      * 获取地址列表
@@ -145,6 +157,10 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                 viewHolder.cbCheck.setChecked(true);
             }
             viewHolder.tvAddressZip.setText(dataBean.getAddress() + "  " + dataBean.getZip());
+
+            viewHolder.cbCheck.setTag(position);
+            viewHolder.btnEdit.setTag(position);
+            viewHolder.btnDelete.setTag(position);
             return convertView;
         }
     }
@@ -167,6 +183,91 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
             cbCheck = (CheckBox) view.findViewById(R.id.cb_check);
             btnEdit = (Button) view.findViewById(R.id.btn_edit);
             btnDelete = (Button) view.findViewById(R.id.btn_delete);
+
+            cbCheck.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("cbCheck", String.valueOf(v.getTag()));
+                }
+            });
+
+            btnEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onEditClick((Integer) v.getTag());
+                }
+            });
+
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onDeleteClick((Integer) v.getTag());
+                }
+            });
+        }
+
+        private void onEditClick(int position) {
+            Intent i = new Intent(AddressListActivity.this, CreateAddressActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("data", addressList.get(position));
+            i.putExtras(bundle);
+            i.putExtra("type", CreateAddressActivity.FLAG_ADDRESS_EDIT);
+            startActivity(i);
+        }
+
+        private void onDeleteClick(final int position) {
+
+            ConfirmDialog dialog = new ConfirmDialog(AddressListActivity.this);
+            dialog.setBody("是否删除该地址");
+            dialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
+                @Override
+                public void confirm() {
+                    //发起请求
+                    RequestParams params = new RequestParams(Client.DELETE_ADDRESS_URL);
+                    params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
+                    params.addQueryStringParameter("id", addressList.get(position).getId());
+
+                    Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
+                        @Override
+                        public void onSuccess(String string) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(string);
+                                int result = jsonObject.getInt("result");
+                                if (result == 0) {
+                                    Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+                                    addressList.remove(position);
+                                    adapter.notifyDataSetChanged();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "删除失败,请稍后重试", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable ex, boolean isOnCallback) {
+                            Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onCancelled(CancelledException cex) {
+
+                        }
+
+                        @Override
+                        public void onFinished() {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void cancel() {
+
+                }
+            });
+            dialog.show();
         }
     }
 }

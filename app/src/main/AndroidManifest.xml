@@ -30,7 +30,8 @@
         <activity android:name=".activity.ForgetPsdActivity3" />
         <activity android:name=".activity.ModifyPsdActivity" />
         <activity android:name=".activity.ModifyPsdActivity2" />
-        <activity android:name=".activity.AddressListActivity"></activity>
+        <activity android:name=".activity.AddressListActivity" />
+        <activity android:name=".activity.CreateAddressActivity"></activity>
     </application>
 
 </manifest>
