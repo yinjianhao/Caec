@@ -53,13 +53,13 @@
         android:layout_below="@+id/tv_address_zip"
         android:background="@color/border" />
 
-    <CheckBox
+    <com.me.caec.view.CustomCheckBox
         android:id="@+id/cb_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line"
         android:layout_marginTop="10dp"
-        android:text="设为默认地址"/>
+        android:text="设为默认地址" />
 
     <Button
         android:id="@+id/btn_delete"

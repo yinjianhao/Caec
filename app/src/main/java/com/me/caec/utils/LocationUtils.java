@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * 从json中查找省市区
- * <p>
+ * <p/>
  * Created by yin on 2016/9/2.
  */
 public class LocationUtils {
@@ -27,7 +27,7 @@ public class LocationUtils {
         InputStream in = null;
         try {
             in = ctx.getAssets().open("location.min.json");
-            String jsonString = StreamUtils.stream2String(in);
+            String jsonString = StreamUtils.stream2String2(in);
             Location location = JSON.parseObject(jsonString, Location.class);
             return location.getData();
         } catch (IOException e) {
@@ -91,6 +91,18 @@ public class LocationUtils {
         return null;
     }
 
+    public static String findProvinceNameWithId(List<Location.DataBean> location, int id) {
+        if (location != null) {
+            for (Location.DataBean dataBean : location) {
+                if (dataBean.getAreaid() == id) {
+                    return dataBean.getAreaname();
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * 根据市id查找市名字
      *
@@ -99,6 +111,22 @@ public class LocationUtils {
      */
     public static String findCityNameWithId(Context ctx, int id) {
         List<Location.DataBean> location = getLocation(ctx);
+        if (location != null) {
+            for (Location.DataBean dataBean : location) {
+                List<Location.DataBean.CityBean> cities = dataBean.getAl();
+
+                for (Location.DataBean.CityBean cityBean : cities) {
+                    if (cityBean.getAreaid() == id) {
+                        return cityBean.getAreaname();
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static String findCityNameWithId(List<Location.DataBean> location, int id) {
         if (location != null) {
             for (Location.DataBean dataBean : location) {
                 List<Location.DataBean.CityBean> cities = dataBean.getAl();
@@ -138,7 +166,28 @@ public class LocationUtils {
 
             }
         }
-        
+
+        return null;
+    }
+
+    public static String findAreaNameWithId(List<Location.DataBean> location, int id) {
+        if (location != null) {
+            for (Location.DataBean dataBean : location) {
+                List<Location.DataBean.CityBean> cities = dataBean.getAl();
+
+                for (Location.DataBean.CityBean cityBean : cities) {
+                    List<Location.DataBean.CityBean.AreaBean> areas = cityBean.getAl();
+
+                    for (Location.DataBean.CityBean.AreaBean areaBean : areas) {
+                        if (areaBean.getAreaid() == id) {
+                            return areaBean.getAreaname();
+                        }
+                    }
+                }
+
+            }
+        }
+
         return null;
     }
 }

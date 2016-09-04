@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
     compile 'org.xutils:xutils:3.3.36'
     compile 'com.alibaba:fastjson:1.1.52.android'
+    compile 'com.google.code.gson:gson:2.6.2'
 }

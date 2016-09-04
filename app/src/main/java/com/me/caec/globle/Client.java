@@ -1,6 +1,7 @@
 package com.me.caec.globle;
 
 /**
+ * 请求地址
  *
  * Created by yin on 2016/8/30.
  */
@@ -49,4 +50,14 @@ public class Client {
 
     //修改收货地址
     public static final String EDIT_ADDRESS_URL = SERVICE_URL + "/member/receiving/edit";
+
+    //修改收货地址
+    public static final String SET_DEFAULT_ADDRESS_URL = SERVICE_URL + "/member/receiving/default";
+
+    //订单相关
+    //订单数量总览
+    public static final String ORDER_NUM_URL = SERVICE_URL + "/member/order/overview";
+
+    //订单列表
+    public static final String ORDER_LIST_URL = SERVICE_URL + "/member/order/list";
 }

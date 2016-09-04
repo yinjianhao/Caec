@@ -2,15 +2,15 @@ package com.me.caec.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.CheckBox;
 
 /**
  * 自定义checkbox
+ * 只响应点击事件,不改变状态
  * <p/>
  * Created by yin on 2016/9/2.
  */
-public class CustomCheckBox extends CheckBox implements View.OnClickListener{
+public class CustomCheckBox extends CheckBox {
 
     public CustomCheckBox(Context context) {
         super(context);
@@ -25,7 +25,7 @@ public class CustomCheckBox extends CheckBox implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View v) {
-
+    public boolean performClick() {
+        return callOnClick();
     }
 }

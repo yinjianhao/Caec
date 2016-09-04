@@ -31,7 +31,8 @@
         <activity android:name=".activity.ModifyPsdActivity" />
         <activity android:name=".activity.ModifyPsdActivity2" />
         <activity android:name=".activity.AddressListActivity" />
-        <activity android:name=".activity.CreateAddressActivity"></activity>
+        <activity android:name=".activity.CreateAddressActivity" />
+        <activity android:name=".activity.OrderListActivity"></activity>
     </application>
 
 </manifest>

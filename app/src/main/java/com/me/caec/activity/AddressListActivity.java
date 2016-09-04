@@ -18,7 +18,9 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.me.caec.R;
 import com.me.caec.bean.AddressList;
+import com.me.caec.bean.Location;
 import com.me.caec.globle.Client;
+import com.me.caec.utils.LocationUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
 
@@ -50,6 +52,9 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
 
     private Adapter adapter;
 
+    //当前默认地址位置
+    private int currentDefault = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +69,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
         tvBack.setOnClickListener(this);
         btnNew.setOnClickListener(this);
 
-        getAddressList();
+//        getAddressList();
     }
 
     @Override
@@ -83,6 +88,11 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getAddressList();
+    }
 
     /**
      * 获取地址列表
@@ -97,8 +107,12 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                 AddressList list = JSON.parseObject(string, AddressList.class);
                 if (list.getResult() == 0) {
                     addressList = list.getData();
-                    adapter = new Adapter();
-                    lvAddress.setAdapter(adapter);
+                    if (adapter == null) {
+                        adapter = new Adapter();
+                        lvAddress.setAdapter(adapter);
+                    } else {
+                        adapter.notifyDataSetChanged();
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
                 }
@@ -153,10 +167,39 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
             viewHolder.tvReceiver.setText(dataBean.getReceiver());
             viewHolder.tvPhone.setText(dataBean.getMobile());
             if (dataBean.isIsDeafault()) {
+                currentDefault = position;   //设置当前默认地址的位置
                 viewHolder.tvDefault.setVisibility(View.VISIBLE);
                 viewHolder.cbCheck.setChecked(true);
+            } else {
+                viewHolder.tvDefault.setVisibility(View.GONE);
+                viewHolder.cbCheck.setChecked(false);
             }
-            viewHolder.tvAddressZip.setText(dataBean.getAddress() + "  " + dataBean.getZip());
+
+            List<Location.DataBean> location = LocationUtils.getLocation(AddressListActivity.this);
+
+            if (dataBean.getProvinceName().isEmpty()) {
+                String provinceName = LocationUtils.findProvinceNameWithId(location, dataBean.getProvinceId());
+                dataBean.setProvinceName(provinceName);
+            }
+
+            if (dataBean.getCityName().isEmpty()) {
+                String cityName = LocationUtils.findCityNameWithId(location, dataBean.getCityId());
+                dataBean.setCityName(cityName);
+            }
+
+            if (dataBean.getAreaName().isEmpty()) {
+                String areaName = LocationUtils.findAreaNameWithId(location, dataBean.getAreaId());
+                dataBean.setAreaName(areaName);
+            }
+
+            String address = dataBean.getProvinceName() +
+                    dataBean.getCityName() +
+                    dataBean.getAreaName() +
+                    dataBean.getAddress() +
+                    "  " +
+                    dataBean.getZip();
+
+            viewHolder.tvAddressZip.setText(address);
 
             viewHolder.cbCheck.setTag(position);
             viewHolder.btnEdit.setTag(position);
@@ -187,7 +230,9 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
             cbCheck.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("cbCheck", String.valueOf(v.getTag()));
+                    if (!cbCheck.isChecked()) {
+                        onCheckBoxClick((Integer) v.getTag());
+                    }
                 }
             });
 
@@ -205,6 +250,47 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                 }
             });
         }
+
+        private void onCheckBoxClick(final int position) {
+            RequestParams params = new RequestParams(Client.SET_DEFAULT_ADDRESS_URL);
+            params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
+            params.addQueryStringParameter("id", addressList.get(position).getId());
+
+            Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String string) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(string);
+                        int result = jsonObject.getInt("result");
+                        if (result == 0) {
+                            addressList.get(currentDefault).setIsDeafault(false);
+                            addressList.get(position).setIsDeafault(true);
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "设置失败,请稍后重试", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+        }
+
 
         private void onEditClick(int position) {
             Intent i = new Intent(AddressListActivity.this, CreateAddressActivity.class);
@@ -235,8 +321,12 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                                 int result = jsonObject.getInt("result");
                                 if (result == 0) {
                                     Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
-                                    addressList.remove(position);
-                                    adapter.notifyDataSetChanged();
+                                    if (addressList.get(position).isIsDeafault()) {
+                                        getAddressList();
+                                    } else {
+                                        addressList.remove(position);
+                                        adapter.notifyDataSetChanged();
+                                    }
                                 } else {
                                     Toast.makeText(getApplicationContext(), "删除失败,请稍后重试", Toast.LENGTH_SHORT).show();
                                 }

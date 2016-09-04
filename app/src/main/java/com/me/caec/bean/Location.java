@@ -64,7 +64,7 @@ public class Location {
             private int areaid;
             private String areaname;
 
-            private List<AreaBean> area;
+            private List<AreaBean> al;
 
             public int getAreaid() {
                 return areaid;
@@ -83,11 +83,11 @@ public class Location {
             }
 
             public List<AreaBean> getAl() {
-                return area;
+                return al;
             }
 
             public void setAl(List<AreaBean> al) {
-                this.area = al;
+                this.al = al;
             }
 
             public static class AreaBean {

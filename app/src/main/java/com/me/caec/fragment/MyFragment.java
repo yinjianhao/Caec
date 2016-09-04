@@ -10,10 +10,12 @@ import android.widget.Toast;
 import com.me.caec.R;
 import com.me.caec.activity.AddressListActivity;
 import com.me.caec.activity.LoginActivity;
+import com.me.caec.activity.OrderListActivity;
 import com.me.caec.activity.UserInfoActivity;
-import com.me.caec.utils.LoginUtils;
+import com.me.caec.utils.ClientUtils;
 import com.me.caec.utils.PreferencesUtils;
 
+import org.xutils.image.ImageOptions;
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
@@ -59,7 +61,7 @@ public class MyFragment extends BaseFragment {
      */
     private void setUserInfo() {
         //判断登录
-        if (LoginUtils.isLogin(getActivity())) {
+        if (ClientUtils.isLogin(getActivity())) {
             String nickName = PreferencesUtils.getString(getActivity(), "nickName", "");
             String phone = PreferencesUtils.getString(getActivity(), "phone", "");
             String headImgUrl = PreferencesUtils.getString(getActivity(), "headImgUrl", "");
@@ -80,7 +82,7 @@ public class MyFragment extends BaseFragment {
     @Event(R.id.iv_head)
     private void onHeadClick(View view) {
         //判断是否登录
-        if (LoginUtils.isLogin(getActivity())) {
+        if (ClientUtils.isLogin(getActivity())) {
             startActivity(new Intent(getActivity(), UserInfoActivity.class));
         } else {
             startActivity(new Intent(getActivity(), LoginActivity.class));
@@ -95,7 +97,7 @@ public class MyFragment extends BaseFragment {
     //我的订单
     @Event(R.id.tv_order)
     private void onOrderClick(View view) {
-
+        startActivity(new Intent(getActivity(), OrderListActivity.class));
     }
 
     //待付款

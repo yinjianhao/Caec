@@ -32,24 +32,24 @@ public class AddressList {
     }
 
     public static class DataBean implements Serializable{
-        private String provinceId;
+        private int provinceId;
         private String id;
         private String zip;
         private String areaName;
         private String receiver;
-        private String cityId;
+        private int cityId;
         private String address;
         private String cityName;
         private String provinceName;
         private boolean isDeafault;
-        private String areaId;
+        private int areaId;
         private String mobile;
 
-        public String getProvinceId() {
+        public int getProvinceId() {
             return provinceId;
         }
 
-        public void setProvinceId(String provinceId) {
+        public void setProvinceId(int provinceId) {
             this.provinceId = provinceId;
         }
 
@@ -85,11 +85,11 @@ public class AddressList {
             this.receiver = receiver;
         }
 
-        public String getCityId() {
+        public int getCityId() {
             return cityId;
         }
 
-        public void setCityId(String cityId) {
+        public void setCityId(int cityId) {
             this.cityId = cityId;
         }
 
@@ -125,11 +125,11 @@ public class AddressList {
             this.isDeafault = isDeafault;
         }
 
-        public String getAreaId() {
+        public int getAreaId() {
             return areaId;
         }
 
-        public void setAreaId(String areaId) {
+        public void setAreaId(int areaId) {
             this.areaId = areaId;
         }
 
