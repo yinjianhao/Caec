@@ -1,5 +1,6 @@
 package com.me.caec.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
@@ -59,6 +60,9 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
         adapter = new Adapter();
         vpPager.setAdapter(adapter);
         tlTab.setupWithViewPager(vpPager);
+
+        Intent intent = getIntent();
+        vpPager.setCurrentItem(intent.getIntExtra("index", 0));  //设置选中项
     }
 
     @Override

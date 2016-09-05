@@ -42,7 +42,7 @@ public class OrderList {
         private String time;
         private String status;
         private String payType;
-        private double cost;
+        private float cost;
 
         private List<SubOrdersBean> subOrders;
 
@@ -78,11 +78,11 @@ public class OrderList {
             this.payType = payType;
         }
 
-        public double getCost() {
+        public float getCost() {
             return cost;
         }
 
-        public void setCost(double cost) {
+        public void setCost(float cost) {
             this.cost = cost;
         }
 
@@ -99,7 +99,7 @@ public class OrderList {
             private String status;
             private String returntime;
             private String type;
-            private double cost;
+            private float cost;
             private String id;
             private String sysTime;
             private String time;
@@ -144,11 +144,11 @@ public class OrderList {
                 this.type = type;
             }
 
-            public double getCost() {
+            public float getCost() {
                 return cost;
             }
 
-            public void setCost(double cost) {
+            public void setCost(float cost) {
                 this.cost = cost;
             }
 
@@ -240,7 +240,7 @@ public class OrderList {
                 private String dealerName;
                 private String url;
                 private int id;
-                private double price;
+                private float price;
                 private String isAssess;
                 private String name;
 
@@ -300,11 +300,11 @@ public class OrderList {
                     this.id = id;
                 }
 
-                public double getPrice() {
+                public float getPrice() {
                     return price;
                 }
 
-                public void setPrice(double price) {
+                public void setPrice(float price) {
                     this.price = price;
                 }
 

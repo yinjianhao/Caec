@@ -12,9 +12,15 @@ import com.me.caec.activity.AddressListActivity;
 import com.me.caec.activity.LoginActivity;
 import com.me.caec.activity.OrderListActivity;
 import com.me.caec.activity.UserInfoActivity;
+import com.me.caec.globle.Client;
 import com.me.caec.utils.ClientUtils;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.view.pagerView.OrderListPager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
 import org.xutils.image.ImageOptions;
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
@@ -44,9 +50,25 @@ public class MyFragment extends BaseFragment {
     @ViewInject(R.id.tv_account)
     private TextView tvAccount;
 
+    @ViewInject(R.id.tv_unpaid_count)
+    private TextView tvUnpaidCount;
+
+    @ViewInject(R.id.tv_uncar_count)
+    private TextView tvUncarCount;
+
+    @ViewInject(R.id.tv_unreceipt_count)
+    private TextView tvUnreceiptCount;
+
+    @ViewInject(R.id.tv_comment_count)
+    private TextView tvCommentCount;
+
+    @ViewInject(R.id.tv_service_count)
+    private TextView tvServiceCount;
+
     @Override
     public void initData() {
-        setUserInfo();
+//        setUserInfo();
+//        getOrderCount();
     }
 
     @Override
@@ -54,6 +76,81 @@ public class MyFragment extends BaseFragment {
         super.onResume();
 
         setUserInfo();
+        getOrderCount();
+    }
+
+    /**
+     * 获取订单数量
+     */
+    private void getOrderCount() {
+        if (ClientUtils.isLogin(getActivity())) {
+            RequestParams params = new RequestParams(Client.ORDER_NUM_URL);
+            params.addQueryStringParameter("token", PreferencesUtils.getString(getActivity(), "token", ""));
+
+            x.http().get(params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        if (json.getInt("result") == 0) {
+                            json = json.getJSONObject("data");
+                            int count;
+                            if ((count = json.getInt("unpaid")) > 0) {
+                                tvUnpaidCount.setVisibility(View.VISIBLE);
+                                tvUnpaidCount.setText(String.valueOf(count));
+                            } else {
+                                tvUnpaidCount.setVisibility(View.GONE);
+                            }
+
+                            if ((count = json.getInt("unreceived")) > 0) {
+                                tvUnreceiptCount.setVisibility(View.VISIBLE);
+                                tvUnreceiptCount.setText(String.valueOf(count));
+                            } else {
+                                tvUnreceiptCount.setVisibility(View.GONE);
+                            }
+
+                            if ((count = json.getInt("unselfservice")) > 0) {
+                                tvUncarCount.setVisibility(View.VISIBLE);
+                                tvUncarCount.setText(String.valueOf(count));
+                            } else {
+                                tvUncarCount.setVisibility(View.GONE);
+                            }
+
+                            if ((count = json.getInt("unassess")) > 0) {
+                                tvCommentCount.setVisibility(View.VISIBLE);
+                                tvCommentCount.setText(String.valueOf(count));
+                            } else {
+                                tvCommentCount.setVisibility(View.GONE);
+                            }
+
+                            if ((count = json.getInt("applyback")) > 0) {
+                                tvServiceCount.setVisibility(View.VISIBLE);
+                                tvServiceCount.setText(String.valueOf(count));
+                            } else {
+                                tvServiceCount.setVisibility(View.GONE);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+        }
     }
 
     /**
@@ -94,44 +191,55 @@ public class MyFragment extends BaseFragment {
         startActivity(new Intent(getActivity(), LoginActivity.class));
     }
 
-    //我的订单
-    @Event(R.id.tv_order)
-    private void onOrderClick(View view) {
+    /**
+     * 跳向订单页面
+     *
+     * @param index 选中的tab索引
+     */
+    private void goOrder(int index) {
         if (ClientUtils.isLogin(getActivity())) {
-            startActivity(new Intent(getActivity(), OrderListActivity.class));
+            Intent i = new Intent(getActivity(), OrderListActivity.class);
+            i.putExtra("index", index);
+            startActivity(i);
         } else {
             startActivity(new Intent(getActivity(), LoginActivity.class));
         }
     }
 
+    //我的订单
+    @Event(R.id.tv_order)
+    private void onOrderClick(View view) {
+        goOrder(0);
+    }
+
     //待付款
     @Event(R.id.rl_unpaid)
     private void onUnpaidOrderClick(View view) {
-
+        goOrder(1);
     }
 
     //待提车
     @Event(R.id.rl_uncar)
     private void onUncarOrderClick(View view) {
-
+        goOrder(2);
     }
 
     //待收货
     @Event(R.id.rl_unreceipt)
     private void onUnreceiptOrderClick(View view) {
-
+        goOrder(3);
     }
 
     //待评价
     @Event(R.id.rl_comment)
     private void onCommentOrderClick(View view) {
-
+        goOrder(4);
     }
 
     //售后
     @Event(R.id.rl_service)
     private void onServiceOrderClick(View view) {
-
+        goOrder(5);
     }
 
     //收货地址

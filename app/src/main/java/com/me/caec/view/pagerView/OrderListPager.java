@@ -5,6 +5,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import com.me.caec.R;
 import com.me.caec.bean.OrderList;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.view.OrderUtils;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -178,15 +181,72 @@ public class OrderListPager {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            TextView tv = new TextView(activity);
-            tv.setText(getItem(position).getId());
-            return tv;
+            ViewHolder viewHolder;
+            if (convertView == null) {
+                convertView = View.inflate(activity, R.layout.listview_item_order_list, null);
+                viewHolder = new ViewHolder(convertView);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            //订单逻辑
+            OrderList.DataBean dataBean = getItem(position);
+            String status = dataBean.getStatus();
+
+            viewHolder.tvTime.setText(dataBean.getTime());
+
+            //未付款或已关闭(此时未拆单)
+            if (status.equals("01") || status.equals("23")) {
+                viewHolder.tvStatus.setText(OrderUtils.status2StatusName(status));
+                viewHolder.tvStatus.setTextColor(OrderUtils.status2TextColor(status));
+            } else {
+                List<OrderList.DataBean.SubOrdersBean> subOrdersBean = dataBean.getSubOrders(); //子订单
+
+            }
+
+            viewHolder.tvStatus.setText(OrderUtils.status2StatusName(dataBean.getStatus()));
+            viewHolder.tvStatus.setTextColor(OrderUtils.status2TextColor(dataBean.getStatus()));
+
+            return convertView;
         }
     }
 
     private class ViewHolder {
 
+        public TextView tvTime;
+        public TextView tvStatus;
+        public LinearLayout llGoods;
+        public TextView tvName;
+        public TextView tvGoodsCount;
+        public TextView tvTotalPaid;
+        public TextView tvRealPaid;
+        public Button btnBuyAgain;
+        public Button btnComment;
+        public Button btnCancel;
+        public Button btnPay;
+        public Button btnConfirm;
+
         public ViewHolder(View view) {
+            tvTime = (TextView) view.findViewById(R.id.tv_time);
+            tvStatus = (TextView) view.findViewById(R.id.tv_status);
+            llGoods = (LinearLayout) view.findViewById(R.id.ll_goods);
+            tvName = (TextView) view.findViewById(R.id.tv_name);
+            tvGoodsCount = (TextView) view.findViewById(R.id.tv_goods_count);
+            tvTotalPaid = (TextView) view.findViewById(R.id.tv_total_paid);
+            tvRealPaid = (TextView) view.findViewById(R.id.tv_real_paid);
+            btnBuyAgain = (Button) view.findViewById(R.id.btn_buy_again);
+            btnComment = (Button) view.findViewById(R.id.btn_comment);
+            btnCancel = (Button) view.findViewById(R.id.btn_cancel);
+            btnPay = (Button) view.findViewById(R.id.btn_pay);
+            btnConfirm = (Button) view.findViewById(R.id.btn_confirm);
+
+            btnBuyAgain.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
         }
     }
 }

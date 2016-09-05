@@ -127,7 +127,6 @@
                 android:layout_toEndOf="@+id/iv_unpaid"
                 android:layout_toRightOf="@+id/iv_unpaid"
                 android:background="@drawable/shape_red_circle"
-                android:text="0"
                 android:textColor="#fff"
                 android:textSize="12sp"
                 android:visibility="gone" />
@@ -168,7 +167,6 @@
                 android:layout_toEndOf="@+id/iv_uncar"
                 android:layout_toRightOf="@+id/iv_uncar"
                 android:background="@drawable/shape_red_circle"
-                android:text="0"
                 android:textColor="#fff"
                 android:textSize="12sp"
                 android:visibility="gone" />
@@ -209,7 +207,6 @@
                 android:layout_toEndOf="@+id/iv_unreceipt"
                 android:layout_toRightOf="@+id/iv_unreceipt"
                 android:background="@drawable/shape_red_circle"
-                android:text="0"
                 android:textColor="#fff"
                 android:textSize="12sp"
                 android:visibility="gone" />
@@ -250,7 +247,6 @@
                 android:layout_toEndOf="@+id/iv_comment"
                 android:layout_toRightOf="@+id/iv_comment"
                 android:background="@drawable/shape_red_circle"
-                android:text="0"
                 android:textColor="#fff"
                 android:textSize="12sp"
                 android:visibility="gone" />
@@ -291,7 +287,6 @@
                 android:layout_toEndOf="@+id/iv_service"
                 android:layout_toRightOf="@+id/iv_service"
                 android:background="@drawable/shape_red_circle"
-                android:text="0"
                 android:textColor="#fff"
                 android:textSize="12sp"
                 android:visibility="gone" />

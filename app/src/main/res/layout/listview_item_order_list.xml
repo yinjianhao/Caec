@@ -37,9 +37,146 @@
         android:background="@color/border" />
 
     <LinearLayout
+        android:id="@+id/ll_goods"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_below="@+id/line">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/screen"
+            android:background="@drawable/border_image"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:text="CS75爆炸输出" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/line2"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/line"
+        android:layout_marginTop="80dp"
+        android:background="@color/border" />
+
+    <TextView
+        android:id="@+id/tv_real_paid"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/line2"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:text="实付:¥8.18"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tv_total_paid"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_below="@+id/line2"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/tv_real_paid"
+        android:layout_toStartOf="@+id/tv_real_paid"
+        android:gravity="center"
+        android:text="合计:¥8.18"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tv_goods_count"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_below="@+id/line2"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/tv_total_paid"
+        android:layout_toStartOf="@+id/tv_total_paid"
+        android:gravity="center"
+        android:text="总共1件商品"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/line3"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/tv_goods_count"
+        android:background="@color/border" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_below="@+id/line3"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
+
+        <Button
+            android:id="@+id/btn_confirm"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_btn_border_normal"
+            android:text="确认收货"
+            android:textColor="@color/color333" />
+
+        <Button
+            android:id="@+id/btn_pay"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_btn_border_normal"
+            android:text="去支付"
+            android:textColor="@color/color333" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_btn_border_normal"
+            android:text="取消订单"
+            android:textColor="@color/color333" />
+
+        <Button
+            android:id="@+id/btn_comment"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_btn_border_normal"
+            android:text="发表评论"
+            android:textColor="@color/color333" />
+
+        <Button
+            android:id="@+id/btn_buy_again"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_btn_border_normal"
+            android:text="再次购买"
+            android:textColor="@color/color333" />
 
     </LinearLayout>
 </RelativeLayout>
