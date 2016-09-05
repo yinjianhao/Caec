@@ -97,7 +97,11 @@ public class MyFragment extends BaseFragment {
     //我的订单
     @Event(R.id.tv_order)
     private void onOrderClick(View view) {
-        startActivity(new Intent(getActivity(), OrderListActivity.class));
+        if (ClientUtils.isLogin(getActivity())) {
+            startActivity(new Intent(getActivity(), OrderListActivity.class));
+        } else {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+        }
     }
 
     //待付款
@@ -133,7 +137,11 @@ public class MyFragment extends BaseFragment {
     //收货地址
     @Event(R.id.tv_address)
     private void onAddressClick(View view) {
-        startActivity(new Intent(getActivity(), AddressListActivity.class));
+        if (ClientUtils.isLogin(getActivity())) {
+            startActivity(new Intent(getActivity(), AddressListActivity.class));
+        } else {
+            startActivity(new Intent(getActivity(), LoginActivity.class));
+        }
     }
 
     //足迹
