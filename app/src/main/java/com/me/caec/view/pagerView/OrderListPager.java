@@ -1,11 +1,14 @@
 package com.me.caec.view.pagerView;
 
 import android.app.Activity;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,13 +18,17 @@ import com.alibaba.fastjson.JSON;
 import com.me.caec.R;
 import com.me.caec.bean.OrderList;
 import com.me.caec.globle.Client;
+import com.me.caec.utils.DpTransforUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.OrderUtils;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
+import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,6 +65,9 @@ public class OrderListPager {
 
     private Adapter adapter;
 
+    //转化2位小数
+    private DecimalFormat decimalFormat;
+
     //订单数据
     private List<OrderList.DataBean> orderListData;
 
@@ -80,6 +90,7 @@ public class OrderListPager {
         lvOrderList = (ListView) rootView.findViewById(R.id.lv_order_list);
 
         getOrderList();
+        decimalFormat = new DecimalFormat("#.00");
     }
 
     public View getRootView() {
@@ -87,7 +98,7 @@ public class OrderListPager {
     }
 
     /**
-     *
+     * 请求订单数据
      */
     private void getOrderList() {
         RequestParams params = new RequestParams(Client.ORDER_LIST_URL);
@@ -102,6 +113,10 @@ public class OrderListPager {
                 OrderList orderList = JSON.parseObject(string, OrderList.class);
                 if (orderList.getResult() == 0) {
                     orderListData = orderList.getData();
+
+                    //处理订单数据
+                    orderListData = OrderUtils.processOrderListData(orderListData);
+
                     if (adapter == null) {
                         adapter = new Adapter();
                         lvOrderList.setAdapter(adapter);
@@ -191,6 +206,7 @@ public class OrderListPager {
             }
 
             //订单逻辑
+            Boolean hasCustomCar = false;  //订单中是否有定制车
             OrderList.DataBean dataBean = getItem(position);
             String status = dataBean.getStatus();
 
@@ -199,15 +215,137 @@ public class OrderListPager {
             //未付款或已关闭(此时未拆单)
             if (status.equals("01") || status.equals("23")) {
                 viewHolder.tvStatus.setText(OrderUtils.status2StatusName(status));
-                viewHolder.tvStatus.setTextColor(OrderUtils.status2TextColor(status));
+                viewHolder.tvStatus.setTextColor(ContextCompat.getColor(
+                        activity, OrderUtils.status2TextColor(status)));
+
+                viewHolder.tvTotalPaid.setText("合计:¥" + decimalFormat.format(dataBean.getCost()));
+                viewHolder.tvRealPaid.setText("实付:¥" + decimalFormat.format(dataBean.getCost()));
+
+                List<ImageView> imageViews = new ArrayList<>();  //保存商品的图片view
+                List<OrderList.DataBean.SubOrdersBean> subOrders = dataBean.getSubOrders();
+                for (int i = 0, l = subOrders.size(); i < l; i++) {
+                    OrderList.DataBean.SubOrdersBean subOrder = subOrders.get(i);
+
+                    if (subOrder.getType().equals("3")) {  //1精品 2整车 3定制车
+                        hasCustomCar = true;
+                    }
+
+                    List<OrderList.DataBean.SubOrdersBean.GoodsBean> goods = subOrder.getGoods();
+                    for (OrderList.DataBean.SubOrdersBean.GoodsBean good : goods) {
+
+                        ImageView iv = new ImageView(activity);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                DpTransforUtils.dp2px(activity, 60), DpTransforUtils.dp2px(activity, 60));
+                        params.setMargins(0, 0, DpTransforUtils.dp2px(activity, 10), 0);
+                        iv.setLayoutParams(params);
+                        iv.setBackgroundResource(R.drawable.border_image);
+
+                        ImageOptions.Builder builder = new ImageOptions.Builder();
+                        builder.setLoadingDrawableId(R.drawable.placeholder_200_200);
+                        ImageOptions options = builder.build();
+                        x.image().bind(iv, good.getImg(), options);
+                        imageViews.add(iv);
+                    }
+                }
+
+                //大于一个
+                if (imageViews.size() > 1) {
+                    viewHolder.llGoods.removeAllViews();
+                    for (int i = 0, l = imageViews.size(); i < l; i++) {
+                        viewHolder.llGoods.addView(imageViews.get(i));
+                    }
+                    viewHolder.llGoodOne.setVisibility(View.GONE);
+                    viewHolder.svGoods.setVisibility(View.VISIBLE);
+                } else {
+                    OrderList.DataBean.SubOrdersBean.GoodsBean goodOne = dataBean.getSubOrders().get(0).getGoods().get(0);
+                    viewHolder.tvName.setText(goodOne.getName());
+                    ImageOptions.Builder builder = new ImageOptions.Builder();
+                    builder.setLoadingDrawableId(R.drawable.placeholder_200_200);
+                    ImageOptions options = builder.build();
+                    x.image().bind(viewHolder.ivGoodOne, goodOne.getImg(), options);
+                    viewHolder.llGoodOne.setVisibility(View.VISIBLE);
+                    viewHolder.svGoods.setVisibility(View.GONE);
+                }
+
+                viewHolder.tvGoodsCount.setText("总共" + imageViews.size() + "件商品");
+
+                //未付款, 取消订单和去付款
+                if (status.equals("01")) {
+                    viewHolder.btnCancel.setVisibility(View.VISIBLE);
+                    viewHolder.btnPay.setVisibility(View.VISIBLE);
+                    viewHolder.btnBuyAgain.setVisibility(View.GONE);
+                    viewHolder.btnComment.setVisibility(View.GONE);
+                    viewHolder.btnConfirm.setVisibility(View.GONE);
+                } else {
+                    //已关闭, 再次购买(无定制车时)
+                    if (hasCustomCar) {
+                        viewHolder.btnBuyAgain.setVisibility(View.GONE);
+                    } else {
+                        viewHolder.btnBuyAgain.setVisibility(View.VISIBLE);
+                    }
+                    viewHolder.btnPay.setVisibility(View.GONE);
+                    viewHolder.btnCancel.setVisibility(View.GONE);
+                    viewHolder.btnComment.setVisibility(View.GONE);
+                    viewHolder.btnConfirm.setVisibility(View.GONE);
+                }
             } else {
-                List<OrderList.DataBean.SubOrdersBean> subOrdersBean = dataBean.getSubOrders(); //子订单
+                //其他状态,订单已拆分
+                //数据已处理,没个订单中只有一个子订单
+                OrderList.DataBean.SubOrdersBean subOrder = dataBean.getSubOrders().get(0);
 
+                viewHolder.tvStatus.setText(OrderUtils.status2StatusName(subOrder.getStatus()));
+                viewHolder.tvStatus.setTextColor(ContextCompat.getColor(
+                        activity, OrderUtils.status2TextColor(subOrder.getStatus())));
+                viewHolder.tvTotalPaid.setText("合计:¥" + decimalFormat.format(subOrder.getCost()));
+                viewHolder.tvRealPaid.setText("实付:¥" + decimalFormat.format(subOrder.getCost()));
+
+                List<OrderList.DataBean.SubOrdersBean.GoodsBean> goods = subOrder.getGoods();
+
+                List<ImageView> imageViews = new ArrayList<>();  //保存商品的图片view
+                for (OrderList.DataBean.SubOrdersBean.GoodsBean good : goods) {
+
+                    ImageView iv = new ImageView(activity);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            DpTransforUtils.dp2px(activity, 60), DpTransforUtils.dp2px(activity, 60));
+                    params.setMargins(0, 0, DpTransforUtils.dp2px(activity, 10), 0);
+                    iv.setLayoutParams(params);
+                    iv.setBackgroundResource(R.drawable.border_image);
+
+                    ImageOptions.Builder builder = new ImageOptions.Builder();
+                    builder.setLoadingDrawableId(R.drawable.placeholder_200_200);
+                    ImageOptions options = builder.build();
+                    x.image().bind(iv, good.getImg(), options);
+                    imageViews.add(iv);
+                }
+
+                //大于一个
+                if (imageViews.size() > 1) {
+                    viewHolder.llGoods.removeAllViews();
+                    for (int i = 0, l = imageViews.size(); i < l; i++) {
+                        viewHolder.llGoods.addView(imageViews.get(i));
+                    }
+                    viewHolder.llGoodOne.setVisibility(View.GONE);
+                    viewHolder.svGoods.setVisibility(View.VISIBLE);
+                } else {
+                    OrderList.DataBean.SubOrdersBean.GoodsBean goodOne = goods.get(0);
+                    viewHolder.tvName.setText(goodOne.getName());
+                    ImageOptions.Builder builder = new ImageOptions.Builder();
+                    builder.setLoadingDrawableId(R.drawable.placeholder_200_200);
+                    ImageOptions options = builder.build();
+                    x.image().bind(viewHolder.ivGoodOne, goodOne.getImg(), options);
+                    viewHolder.llGoodOne.setVisibility(View.VISIBLE);
+                    viewHolder.svGoods.setVisibility(View.GONE);
+                }
+
+                viewHolder.tvGoodsCount.setText("总共" + imageViews.size() + "件商品");
+
+                //设置按钮
+                viewHolder.btnCancel.setVisibility(View.VISIBLE);
+                viewHolder.btnPay.setVisibility(View.VISIBLE);
+                viewHolder.btnBuyAgain.setVisibility(View.GONE);
+                viewHolder.btnComment.setVisibility(View.GONE);
+                viewHolder.btnConfirm.setVisibility(View.GONE);
             }
-
-            viewHolder.tvStatus.setText(OrderUtils.status2StatusName(dataBean.getStatus()));
-            viewHolder.tvStatus.setTextColor(OrderUtils.status2TextColor(dataBean.getStatus()));
-
             return convertView;
         }
     }
@@ -216,7 +354,10 @@ public class OrderListPager {
 
         public TextView tvTime;
         public TextView tvStatus;
+        public LinearLayout llGoodOne;
+        public ImageView ivGoodOne;
         public LinearLayout llGoods;
+        public HorizontalScrollView svGoods;
         public TextView tvName;
         public TextView tvGoodsCount;
         public TextView tvTotalPaid;
@@ -230,7 +371,10 @@ public class OrderListPager {
         public ViewHolder(View view) {
             tvTime = (TextView) view.findViewById(R.id.tv_time);
             tvStatus = (TextView) view.findViewById(R.id.tv_status);
+            llGoodOne = (LinearLayout) view.findViewById(R.id.ll_good_one);
+            ivGoodOne = (ImageView) view.findViewById(R.id.iv_good_one);
             llGoods = (LinearLayout) view.findViewById(R.id.ll_goods);
+            svGoods = (HorizontalScrollView) view.findViewById(R.id.sv_goods);
             tvName = (TextView) view.findViewById(R.id.tv_name);
             tvGoodsCount = (TextView) view.findViewById(R.id.tv_goods_count);
             tvTotalPaid = (TextView) view.findViewById(R.id.tv_total_paid);

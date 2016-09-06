@@ -1,8 +1,11 @@
 package com.me.caec.view;
 
 import com.me.caec.R;
+import com.me.caec.bean.OrderList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * 订单相关操作
@@ -63,6 +66,7 @@ public class OrderUtils {
 
     /**
      * 根据状态获取文字颜色
+     *
      * @param status
      * @return
      */
@@ -75,5 +79,55 @@ public class OrderUtils {
         }
 
         return color;
+    }
+
+    /**
+     * 除了未付款和已关闭订单(未拆分),其他状态的订单需要根据子订单拆分显示
+     * 遍历订单数据,取出符合要求的子订单,组成新的订单数据
+     *
+     * @param dataBean
+     * @return
+     */
+    public static List<OrderList.DataBean> processOrderListData(List<OrderList.DataBean> dataBean) {
+
+        //遍历主订单
+        for (int i = 0, l = dataBean.size(); i < l; i++) {
+            OrderList.DataBean order = dataBean.get(i);
+            //未付款和已关闭,跳过
+            if (order.getStatus().equals("01") || order.getStatus().equals("23")) {
+                continue;
+            }
+
+            //新建主订单,将子订单拼接起来
+            List<OrderList.DataBean.SubOrdersBean> subOrders = order.getSubOrders();
+
+            if (subOrders.size() > 1) {
+                int currentI = i;
+
+                for (OrderList.DataBean.SubOrdersBean subOrder : subOrders) {
+                    OrderList.DataBean newOrder = new OrderList.DataBean();
+                    newOrder.setCost(order.getCost());
+                    newOrder.setId(order.getId());
+                    newOrder.setPayType(order.getPayType());
+                    newOrder.setStatus(order.getStatus());
+                    newOrder.setTime(order.getTime());
+
+                    List<OrderList.DataBean.SubOrdersBean> newSubOrders = new ArrayList<>();
+                    newSubOrders.add(subOrder);
+                    newOrder.setSubOrders(newSubOrders);
+
+
+                    //将新增订单按顺序加入列表当中
+                    i++;
+                    dataBean.add(i, newOrder);
+                }
+
+                //删除原有订单
+                dataBean.remove(currentI);
+                i--;
+            }
+        }
+
+        return dataBean;
     }
 }

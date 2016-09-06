@@ -36,8 +36,9 @@
         android:layout_below="@+id/tv_time"
         android:background="@color/border" />
 
+    <!--1个商品时-->
     <LinearLayout
-        android:id="@+id/ll_goods"
+        android:id="@+id/ll_good_one"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line"
@@ -45,20 +46,41 @@
         android:paddingTop="10dp">
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/screen"
-            android:background="@drawable/border_image"/>
+            android:id="@+id/iv_good_one"
+            style="@style/OrderListGoodImageStyle"
+            android:src="@drawable/placeholder_200_200" />
 
         <TextView
             android:id="@+id/tv_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:ellipsize="end"
+            android:lines="1"
             android:text="CS75爆炸输出" />
     </LinearLayout>
+
+    <!--多个商品时-->
+    <HorizontalScrollView
+        android:id="@+id/sv_goods"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/ll_goods"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
+
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <TextView
         android:id="@+id/line2"
