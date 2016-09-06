@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * 订单列表
- * <p/>
+ * <p>
  * Created by yin on 2016/9/5.
  */
 public class OrderListPager {
@@ -206,7 +206,10 @@ public class OrderListPager {
             }
 
             //订单逻辑
+            List<ImageView> imageViews = new ArrayList<>();  //保存商品的图片view
             Boolean hasCustomCar = false;  //订单中是否有定制车
+            Boolean isComment = true;     //是否已经评论
+
             OrderList.DataBean dataBean = getItem(position);
             String status = dataBean.getStatus();
 
@@ -221,7 +224,6 @@ public class OrderListPager {
                 viewHolder.tvTotalPaid.setText("合计:¥" + decimalFormat.format(dataBean.getCost()));
                 viewHolder.tvRealPaid.setText("实付:¥" + decimalFormat.format(dataBean.getCost()));
 
-                List<ImageView> imageViews = new ArrayList<>();  //保存商品的图片view
                 List<OrderList.DataBean.SubOrdersBean> subOrders = dataBean.getSubOrders();
                 for (int i = 0, l = subOrders.size(); i < l; i++) {
                     OrderList.DataBean.SubOrdersBean subOrder = subOrders.get(i);
@@ -290,8 +292,12 @@ public class OrderListPager {
                 }
             } else {
                 //其他状态,订单已拆分
-                //数据已处理,没个订单中只有一个子订单
+                //数据已处理,每个订单中只有一个子订单
                 OrderList.DataBean.SubOrdersBean subOrder = dataBean.getSubOrders().get(0);
+
+                if (subOrder.getType().equals("3")) {  //1精品 2整车 3定制车
+                    hasCustomCar = true;
+                }
 
                 viewHolder.tvStatus.setText(OrderUtils.status2StatusName(subOrder.getStatus()));
                 viewHolder.tvStatus.setTextColor(ContextCompat.getColor(
@@ -301,8 +307,12 @@ public class OrderListPager {
 
                 List<OrderList.DataBean.SubOrdersBean.GoodsBean> goods = subOrder.getGoods();
 
-                List<ImageView> imageViews = new ArrayList<>();  //保存商品的图片view
+
                 for (OrderList.DataBean.SubOrdersBean.GoodsBean good : goods) {
+
+                    if (isComment && good.getIsAssess().equals("N")) {   //没有评论时
+                        isComment = false;
+                    }
 
                     ImageView iv = new ImageView(activity);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -339,12 +349,28 @@ public class OrderListPager {
 
                 viewHolder.tvGoodsCount.setText("总共" + imageViews.size() + "件商品");
 
-                //设置按钮
-                viewHolder.btnCancel.setVisibility(View.VISIBLE);
-                viewHolder.btnPay.setVisibility(View.VISIBLE);
-                viewHolder.btnBuyAgain.setVisibility(View.GONE);
-                viewHolder.btnComment.setVisibility(View.GONE);
-                viewHolder.btnConfirm.setVisibility(View.GONE);
+                String subOrderStatus = subOrder.getStatus();
+
+                viewHolder.btnPay.setVisibility(View.GONE);//不能付款了
+                if ((subOrderStatus.equals("23") || subOrderStatus.equals("11")) && !hasCustomCar) {  //交易完成或已取消
+                    viewHolder.btnBuyAgain.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.btnBuyAgain.setVisibility(View.GONE);
+                }
+
+                if (subOrderStatus.equals("23") && !isComment) {
+                    viewHolder.btnComment.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.btnComment.setVisibility(View.GONE);
+                }
+
+                if (subOrderStatus.equals("30")) {  //已发货
+                    viewHolder.btnConfirm.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.btnConfirm.setVisibility(View.GONE);
+                }
+
+                viewHolder.btnCancel.setVisibility(View.GONE);
             }
             return convertView;
         }
