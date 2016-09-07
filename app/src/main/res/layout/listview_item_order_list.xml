@@ -140,7 +140,7 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:layout_below="@+id/line3"
-        android:gravity="right"
+        android:gravity="end"
         android:orientation="horizontal"
         android:paddingBottom="10dp"
         android:paddingTop="10dp">

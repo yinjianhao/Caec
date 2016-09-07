@@ -32,7 +32,9 @@
         <activity android:name=".activity.ModifyPsdActivity2" />
         <activity android:name=".activity.AddressListActivity" />
         <activity android:name=".activity.CreateAddressActivity" />
-        <activity android:name=".activity.OrderListActivity"></activity>
+        <activity android:name=".activity.OrderListActivity" />
+        <activity android:name=".activity.CartActivity" />
+        <activity android:name=".activity.CommentActivity"></activity>
     </application>
 
 </manifest>

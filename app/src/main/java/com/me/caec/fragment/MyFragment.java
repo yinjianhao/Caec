@@ -15,6 +15,7 @@ import com.me.caec.activity.UserInfoActivity;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.ClientUtils;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.view.LoadingDialog;
 import com.me.caec.view.pagerView.OrderListPager;
 
 import org.json.JSONException;
@@ -69,6 +70,9 @@ public class MyFragment extends BaseFragment {
     public void initData() {
 //        setUserInfo();
 //        getOrderCount();
+        LoadingDialog loading = new LoadingDialog(getActivity());
+        loading.setCancelable(false);
+        loading.show();
     }
 
     @Override

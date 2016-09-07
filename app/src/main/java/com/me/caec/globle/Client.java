@@ -2,7 +2,7 @@ package com.me.caec.globle;
 
 /**
  * 请求地址
- *
+ * <p/>
  * Created by yin on 2016/8/30.
  */
 public class Client {
@@ -60,4 +60,13 @@ public class Client {
 
     //订单列表
     public static final String ORDER_LIST_URL = SERVICE_URL + "/member/order/list";
+
+    //加入购物车
+    public static final String ADD_CART_URL = SERVICE_URL + "/shoppingcart/cart/shopping";
+
+    //确认收货
+    public static final String CONFIRM_RECEIPT_URL = SERVICE_URL + "/member/order/complete";
+
+    //取消订单
+    public static final String CANCEL_ORDER_URL = SERVICE_URL + "/member/order/cancel";
 }

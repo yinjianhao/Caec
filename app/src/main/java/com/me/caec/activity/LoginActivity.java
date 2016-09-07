@@ -102,6 +102,8 @@ public class LoginActivity extends AppCompatActivity {
                         PreferencesUtils.setString(LoginActivity.this, "nickName", data.getString("nickname"));
                         PreferencesUtils.setString(LoginActivity.this, "headImgUrl", data.getString("img"));
                         finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -111,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 Log.d(TAG, ex.toString());
-                Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
             }
 
             @Override

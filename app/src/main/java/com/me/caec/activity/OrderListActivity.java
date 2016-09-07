@@ -6,10 +6,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.view.pagerView.OrderListPager;
@@ -33,10 +35,13 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
     @ViewInject(R.id.vp_pager)
     private ViewPager vpPager;
 
+    public static final int CODE_COMMENT = 1;  //code for 评论页面
+
     private String[] title = new String[]{"全部", "待付款", "待提车", "待收货", "待评价", "售后/退款"};
 
     private Adapter adapter;
 
+    private OrderListPager currentPager;   //当前页面
     private OrderListPager allPager;
     private OrderListPager unpaidPager;
     private OrderListPager uncarPager;
@@ -95,48 +100,49 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
                 case 0:
                     if (allPager == null) {
                         allPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_ALL);
-                        allPager.initData();
                     }
+                    currentPager = allPager;
                     view = allPager.getRootView();
                     break;
                 case 1:
                     if (unpaidPager == null) {
                         unpaidPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNPAID);
-                        unpaidPager.initData();
                     }
+                    currentPager = unpaidPager;
                     view = unpaidPager.getRootView();
                     break;
                 case 2:
                     if (uncarPager == null) {
                         uncarPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNCAR);
-                        uncarPager.initData();
                     }
+                    currentPager = uncarPager;
                     view = uncarPager.getRootView();
                     break;
                 case 3:
                     if (unreceivedPager == null) {
                         unreceivedPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNRECEIVED);
-                        unreceivedPager.initData();
                     }
+                    currentPager = unreceivedPager;
                     view = unreceivedPager.getRootView();
                     break;
                 case 4:
                     if (uncommentPager == null) {
                         uncommentPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNCOMMENT);
-                        uncommentPager.initData();
                     }
+                    currentPager = uncommentPager;
                     view = uncommentPager.getRootView();
                     break;
                 case 5:
                     if (serviecePager == null) {
                         serviecePager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_SERVICE);
-                        serviecePager.initData();
                     }
+                    currentPager = serviecePager;
                     view = serviecePager.getRootView();
                     break;
                 default:
                     break;
             }
+            currentPager.initData();
             container.addView(view);
             return view;
         }
@@ -149,6 +155,19 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
         @Override
         public CharSequence getPageTitle(int position) {
             return title[position];
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //判断是否更新数据
+        if (resultCode == 1) {  //resultCode  1成功 0失败
+            if (data.getBooleanExtra("update", false)) {
+                currentPager.initData();
+                Log.d("OrderListActivity", "update");
+            }
         }
     }
 }

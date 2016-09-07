@@ -1,10 +1,14 @@
 package com.me.caec.view.pagerView;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
@@ -15,26 +19,38 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
+import com.me.caec.activity.CartActivity;
+import com.me.caec.activity.CommentActivity;
+import com.me.caec.activity.OrderListActivity;
 import com.me.caec.bean.OrderList;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.DpTransforUtils;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.view.ConfirmDialog;
+import com.me.caec.view.LoadingDialog;
 import com.me.caec.view.OrderUtils;
 
+import org.json.JSONException;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 订单列表
- * <p>
+ * <p/>
  * Created by yin on 2016/9/5.
  */
 public class OrderListPager {
@@ -55,6 +71,8 @@ public class OrderListPager {
     private Activity activity;
 
     private View rootView;
+
+    private String[] reasons = new String[]{"预算不足", "价格太高", "现在不想买了", "买其他商品了", "其它"};
 
     //订单类型
     private int type;
@@ -86,11 +104,18 @@ public class OrderListPager {
     }
 
     public void initData() {
-        srlOrderList = (SwipeRefreshLayout) rootView.findViewById(R.id.srl_order_list);
+        decimalFormat = new DecimalFormat("#.00");
+//        srlOrderList = (SwipeRefreshLayout) rootView.findViewById(R.id.srl_order_list);
         lvOrderList = (ListView) rootView.findViewById(R.id.lv_order_list);
+        lvOrderList.setEmptyView(rootView.findViewById(R.id.ll_empty));
 
         getOrderList();
-        decimalFormat = new DecimalFormat("#.00");
+        lvOrderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
     }
 
     public View getRootView() {
@@ -214,6 +239,7 @@ public class OrderListPager {
             String status = dataBean.getStatus();
 
             viewHolder.tvTime.setText(dataBean.getTime());
+            viewHolder.tvTime.setTag(position);   //设置标记当前位置
 
             //未付款或已关闭(此时未拆单)
             if (status.equals("01") || status.equals("23")) {
@@ -352,25 +378,83 @@ public class OrderListPager {
                 String subOrderStatus = subOrder.getStatus();
 
                 viewHolder.btnPay.setVisibility(View.GONE);//不能付款了
-                if ((subOrderStatus.equals("23") || subOrderStatus.equals("11")) && !hasCustomCar) {  //交易完成或已取消
+                if ((subOrderStatus.equals("26") || subOrderStatus.equals("11")) && !hasCustomCar) {  //交易完成或已取消
                     viewHolder.btnBuyAgain.setVisibility(View.VISIBLE);
                 } else {
                     viewHolder.btnBuyAgain.setVisibility(View.GONE);
                 }
 
-                if (subOrderStatus.equals("23") && !isComment) {
+                if (subOrderStatus.equals("26") && !isComment) {
                     viewHolder.btnComment.setVisibility(View.VISIBLE);
                 } else {
                     viewHolder.btnComment.setVisibility(View.GONE);
                 }
 
-                if (subOrderStatus.equals("30")) {  //已发货
+                if (subOrderStatus.equals("30")) {  //已发货, 确认守候
                     viewHolder.btnConfirm.setVisibility(View.VISIBLE);
                 } else {
                     viewHolder.btnConfirm.setVisibility(View.GONE);
                 }
 
-                viewHolder.btnCancel.setVisibility(View.GONE);
+                //是否可以取消
+                //整车在已支付,待提车下,显示取消订单;精品未发货之前;定制车按规则计算;
+                Boolean backMoney = false;   //是否退钱
+                boolean isCancel = false;    //是否可以取消
+                String type = subOrder.getType();
+
+                //能否允许取消,退不退钱
+                if (type.equals("1") && subOrderStatus.equals("02")) {  //精品发货之前(已支付)
+                    isCancel = true;
+                    backMoney = true;
+                } else if (type.equals("2") && (subOrderStatus.equals("02") || subOrderStatus.equals("07"))) {
+                    isCancel = true;
+                    backMoney = true;
+                } else {
+
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                    Date productTime = null;
+                    Date sysTime = null;
+                    Date receiverTime = null;
+
+                    try {
+                        productTime = format.parse(subOrder.getProducttime());
+                        sysTime = format.parse(subOrder.getSysTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        viewHolder.btnCancel.setVisibility(View.GONE);
+                    }
+
+                    if (productTime != null && sysTime != null) {
+                        if (sysTime.before(productTime) || sysTime.equals(productTime)) {
+                            if (Integer.parseInt(subOrderStatus) < 7) {
+                                isCancel = true;
+                            }
+                        } else {
+                            if (Integer.parseInt(subOrderStatus) < 7) {
+                                isCancel = true;
+                                backMoney = true;
+                            } else if (subOrderStatus.equals("07")) {
+                                try {
+                                    receiverTime = format.parse(subOrder.getReceiverTime());
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                                if (receiverTime != null && receiverTime.after(productTime)) {
+                                    isCancel = true;
+                                    backMoney = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                viewHolder.btnCancel.setTag(backMoney); //标志,退不退钱
+                if (isCancel) {
+                    viewHolder.btnCancel.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.btnCancel.setVisibility(View.GONE);
+                }
             }
             return convertView;
         }
@@ -411,10 +495,236 @@ public class OrderListPager {
             btnPay = (Button) view.findViewById(R.id.btn_pay);
             btnConfirm = (Button) view.findViewById(R.id.btn_confirm);
 
+            //再次购买
             btnBuyAgain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    JSONArray jsonArray = new JSONArray();
 
+                    int position = (int) tvTime.getTag();
+                    List<OrderList.DataBean.SubOrdersBean> subOrders = orderListData.get(position).getSubOrders();
+                    for (OrderList.DataBean.SubOrdersBean subOrder : subOrders) {
+                        List<OrderList.DataBean.SubOrdersBean.GoodsBean> goods = subOrder.getGoods();
+                        for (OrderList.DataBean.SubOrdersBean.GoodsBean good : goods) {
+                            JSONObject json = new JSONObject();
+                            json.put("id", good.getId());
+                            json.put("count", good.getCount());
+                            jsonArray.add(json);
+                        }
+                    }
+
+                    RequestParams params = new RequestParams(Client.ADD_CART_URL);
+                    params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
+                    params.addQueryStringParameter("goods", jsonArray.toString());
+
+                    //loading
+                    LoadingDialog loading = new LoadingDialog(activity);
+                    loading.show();
+
+                    x.http().post(params, new Callback.CommonCallback<String>() {
+                        @Override
+                        public void onSuccess(String result) {
+                            try {
+                                org.json.JSONObject json = new org.json.JSONObject(result);
+                                if (json.getInt("result") == 0) {
+                                    Toast.makeText(activity, "加入购物车成功", Toast.LENGTH_SHORT).show();
+                                    activity.startActivity(new Intent(activity, CartActivity.class));
+                                } else {
+                                    Toast.makeText(activity, "加入购物车失败", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable ex, boolean isOnCallback) {
+                            Toast.makeText(activity, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onCancelled(CancelledException cex) {
+
+                        }
+
+                        @Override
+                        public void onFinished() {
+
+                        }
+                    });
+                }
+            });
+
+            //评论
+            btnComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = (int) tvTime.getTag();
+                    OrderList.DataBean.SubOrdersBean subOrder = orderListData.get(position).getSubOrders().get(0);
+                    String subOrderId = subOrder.getId();
+
+                    Intent i = new Intent(activity, CommentActivity.class);
+                    i.putExtra("orderId", subOrderId);
+                    activity.startActivityForResult(i, OrderListActivity.CODE_COMMENT);
+                }
+            });
+
+            //取消订单
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final int position = (int) tvTime.getTag();
+                    final OrderList.DataBean order = orderListData.get(position);
+                    String status = order.getStatus();
+                    Boolean backMoney;
+                    String orderId;
+
+                    if (status.equals("01")) {
+                        backMoney = true;
+                        orderId = order.getId();
+                    } else {
+                        backMoney = (Boolean) btnCancel.getTag();
+                        orderId = order.getSubOrders().get(0).getId();
+                    }
+
+                    final Boolean finalBackMoney = backMoney;
+                    final String finalOrderId = orderId;
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setSingleChoiceItems(reasons, -1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+
+                            ConfirmDialog confirmDialog = new ConfirmDialog(activity);
+                            String tip = "你确定要取消此订单吗?" + (finalBackMoney ? "" : "(不退钱哦)");
+                            confirmDialog.setBody(tip);
+                            confirmDialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
+                                @Override
+                                public void confirm() {
+                                    RequestParams params = new RequestParams(Client.CANCEL_ORDER_URL);
+                                    params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
+                                    params.addQueryStringParameter("id", finalOrderId);
+                                    params.addQueryStringParameter("reason", reasons[position]);
+
+                                    x.http().post(params, new Callback.CommonCallback<String>() {
+                                        @Override
+                                        public void onSuccess(String result) {
+                                            try {
+                                                org.json.JSONObject json = new org.json.JSONObject(result);
+                                                if (json.getInt("result") == 0) {
+                                                    if (type == TYPE_ALL) {
+                                                        order.setStatus("23");
+                                                    } else {
+                                                        orderListData.remove(position);
+                                                    }
+                                                    adapter.notifyDataSetChanged();
+                                                } else {
+                                                    Toast.makeText(activity, "取消订单失败", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable ex, boolean isOnCallback) {
+                                            Toast.makeText(activity, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(CancelledException cex) {
+
+                                        }
+
+                                        @Override
+                                        public void onFinished() {
+
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void cancel() {
+
+                                }
+                            });
+                            confirmDialog.show();
+                        }
+                    });
+                    builder.show();
+                }
+            });
+
+            //去付款
+            btnPay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = (int) tvTime.getTag();
+                    Toast.makeText(activity, "没办法付钱啊", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            //确认收货
+            btnConfirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final int position = (int) tvTime.getTag();
+
+                    final OrderList.DataBean.SubOrdersBean subOrder = orderListData.get(position).getSubOrders().get(0);
+                    final String subOrderId = subOrder.getId();
+                    ConfirmDialog dialog = new ConfirmDialog(activity);
+                    dialog.setBody("你确定要收货吗?");
+                    dialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
+                        @Override
+                        public void confirm() {
+                            RequestParams params = new RequestParams(Client.CONFIRM_RECEIPT_URL);
+                            params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
+                            params.addQueryStringParameter("id", subOrderId);
+                            x.http().post(params, new Callback.CommonCallback<String>() {
+                                @Override
+                                public void onSuccess(String result) {
+                                    try {
+                                        org.json.JSONObject json = new org.json.JSONObject(result);
+                                        if (json.getInt("result") == 0) {
+                                            if (type == TYPE_ALL) {
+                                                subOrder.setStatus("26");
+                                                subOrder.getGoods().get(0).setIsAssess("N");//设置可以评论,1条即可
+                                            } else {
+                                                orderListData.remove(position);
+                                            }
+                                            adapter.notifyDataSetChanged();
+                                        } else {
+                                            Toast.makeText(activity, "确认收货失败", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable ex, boolean isOnCallback) {
+                                    Toast.makeText(activity, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onCancelled(CancelledException cex) {
+
+                                }
+
+                                @Override
+                                public void onFinished() {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void cancel() {
+
+                        }
+                    });
+                    dialog.show();
                 }
             });
         }
