@@ -69,4 +69,10 @@ public class Client {
 
     //取消订单
     public static final String CANCEL_ORDER_URL = SERVICE_URL + "/member/order/cancel";
+
+    //评价列表
+    public static final String COMMENT_LIST_URL = SERVICE_URL + "/member/assess/goodsAll";
+
+    //发表评价
+    public static final String PUBILSH_COMMENT_URL = SERVICE_URL + "/member/assess/publishAll";
 }

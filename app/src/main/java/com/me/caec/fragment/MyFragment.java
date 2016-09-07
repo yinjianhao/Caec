@@ -70,9 +70,9 @@ public class MyFragment extends BaseFragment {
     public void initData() {
 //        setUserInfo();
 //        getOrderCount();
-        LoadingDialog loading = new LoadingDialog(getActivity());
-        loading.setCancelable(false);
-        loading.show();
+//        LoadingDialog loading = new LoadingDialog(getActivity());
+//        loading.setCancelable(false);
+//        loading.show();
     }
 
     @Override

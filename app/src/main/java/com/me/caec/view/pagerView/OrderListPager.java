@@ -517,10 +517,6 @@ public class OrderListPager {
                     params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
                     params.addQueryStringParameter("goods", jsonArray.toString());
 
-                    //loading
-                    LoadingDialog loading = new LoadingDialog(activity);
-                    loading.show();
-
                     x.http().post(params, new Callback.CommonCallback<String>() {
                         @Override
                         public void onSuccess(String result) {
