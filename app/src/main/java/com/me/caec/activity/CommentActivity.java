@@ -1,8 +1,8 @@
 package com.me.caec.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,11 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
 import com.me.caec.bean.CommentList;
+import com.me.caec.bean.OrderList;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.PreferencesUtils;
 
+import org.json.JSONException;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.image.ImageOptions;
@@ -43,7 +47,11 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
     @ViewInject(R.id.lv_comment)
     private ListView lvComment;
 
+    @ViewInject(R.id.btn_confirm)
+    private Button btnConfirm;
+
     private String orderId;
+
     private List<CommentList.DataBean> commentList;
     private Adapter adapter;
 
@@ -59,6 +67,7 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
     private void initView() {
         tvTitle.setText("发表评论");
         tvBack.setOnClickListener(this);
+        btnConfirm.setOnClickListener(this);
 
         Intent intent = getIntent();
         orderId = intent.getStringExtra("orderId");
@@ -123,7 +132,85 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
      * 提交评论
      */
     private void confirmComment() {
+        int childCount = lvComment.getChildCount();
+        JSONArray jsonArray = new JSONArray();
+        String[] pics;
 
+        int rb4S = (int) ((RatingBar) lvComment.getChildAt(childCount - 1).findViewById(R.id.rb_4s)).getRating();
+        int rbShop = (int) ((RatingBar) lvComment.getChildAt(childCount - 1).findViewById(R.id.rb_shop)).getRating();
+        int rbLogistics = (int) ((RatingBar) lvComment.getChildAt(childCount - 1).findViewById(R.id.rb_logistics)).getRating();
+
+        for (int i = 0; i < childCount - 1; i++) {
+            JSONObject json = new JSONObject();
+            JSONObject rbJson = new JSONObject();
+
+            EditText etDesc = (EditText) lvComment.getChildAt(i).findViewById(R.id.et_desc);
+            RatingBar ratingBar = (RatingBar) lvComment.getChildAt(i).findViewById(R.id.ratingBar);
+            LinearLayout llPhotoContent = (LinearLayout) lvComment.getChildAt(i).findViewById(R.id.ll_photo_content);
+
+            pics = new String[llPhotoContent.getChildCount() - 1];
+
+            String desc;
+            if ((desc = etDesc.getText().toString().trim()).isEmpty()) {
+                Toast.makeText(this, "请对商品填写评价!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int rbDesc = (int) ratingBar.getRating();
+            rbJson.put("desc", rbDesc);
+            rbJson.put("4s", rb4S);
+            rbJson.put("mall", rbShop);
+            rbJson.put("logistics", rbLogistics);
+
+            json.put("goodsId", commentList.get(i).getId());
+            json.put("content", desc);
+            json.put("pic", pics);
+            json.put("score", rbJson.toString());
+
+            jsonArray.add(json);
+        }
+
+        //发起请求
+        RequestParams params = new RequestParams(Client.PUBILSH_COMMENT_URL);
+        params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
+        params.addQueryStringParameter("orderId", orderId);
+        params.addQueryStringParameter("goods", jsonArray.toString());
+
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    org.json.JSONObject json = new org.json.JSONObject(result);
+                    if (json.getInt("result") == 0) {
+                        Toast.makeText(CommentActivity.this, "评价成功", Toast.LENGTH_SHORT).show();
+
+                        Intent i = new Intent(CommentActivity.this, OrderListActivity.class);
+                        i.putExtra("update", true);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        Toast.makeText(CommentActivity.this, "评价失败", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                Toast.makeText(CommentActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
 
     private class Adapter extends BaseAdapter {

@@ -61,6 +61,15 @@ public class Client {
     //订单列表
     public static final String ORDER_LIST_URL = SERVICE_URL + "/member/order/list";
 
+    //订单详情
+    public static final String ORDER_DETAIL_URL = SERVICE_URL + "/member/order/detail";
+
+    //订单详情(未付款,已关闭)
+    public static final String ORDER_DETAIL_PAY_URL = SERVICE_URL + "/member/order/notpay";
+
+    //订单详情(已取消,审核中)
+    public static final String ORDER_DETAIL_CANCEL_URL = SERVICE_URL + "/member/order/canceled";
+
     //加入购物车
     public static final String ADD_CART_URL = SERVICE_URL + "/shoppingcart/cart/shopping";
 

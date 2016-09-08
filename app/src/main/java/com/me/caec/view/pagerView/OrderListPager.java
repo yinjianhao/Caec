@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -24,14 +25,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
 import com.me.caec.activity.CartActivity;
 import com.me.caec.activity.CommentActivity;
+import com.me.caec.activity.OrderDetailNormalActivity;
+import com.me.caec.activity.OrderDetailPayActivity;
 import com.me.caec.activity.OrderListActivity;
 import com.me.caec.bean.OrderList;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.DpTransforUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
-import com.me.caec.view.LoadingDialog;
-import com.me.caec.view.OrderUtils;
+import com.me.caec.utils.OrderUtils;
 
 import org.json.JSONException;
 import org.xutils.common.Callback;
@@ -113,7 +115,19 @@ public class OrderListPager {
         lvOrderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                //判断哪个订单详情
+                OrderList.DataBean dataBean = orderListData.get(position);
+                String status = dataBean.getStatus();
+                Intent i;
+                if (status.equals("01") || status.equals("23")) {
+                    i = new Intent(activity, OrderDetailPayActivity.class);
+                } else {
+                    i = new Intent(activity, OrderDetailNormalActivity.class);
+                }
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("order", dataBean);
+                i.putExtras(bundle);
+                activity.startActivity(i);
             }
         });
     }

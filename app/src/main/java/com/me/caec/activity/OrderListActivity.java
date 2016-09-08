@@ -96,6 +96,7 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View view = null;
+            Log.d("OrderListActivity", String.valueOf(position));
             switch (position) {
                 case 0:
                     if (allPager == null) {
@@ -143,7 +144,7 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
                     break;
             }
             currentPager.initData();
-            container.addView(view);
+            container.addView(view, 0);
             return view;
         }
 
@@ -168,6 +169,15 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
                 currentPager.initData();
                 Log.d("OrderListActivity", "update");
             }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d("OrderListActivity", String.valueOf(intent.getBooleanExtra("update", false)));
+        if (intent.getBooleanExtra("update", false)) {
+            currentPager.initData();
         }
     }
 }

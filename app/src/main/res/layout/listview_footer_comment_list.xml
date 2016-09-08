@@ -55,6 +55,7 @@
             android:layout_gravity="center_vertical"
             android:isIndicator="false"
             android:numStars="5"
+            android:rating="5"
             android:stepSize="1" />
     </LinearLayout>
 
@@ -86,6 +87,7 @@
             android:layout_gravity="center_vertical"
             android:isIndicator="false"
             android:numStars="5"
+            android:rating="5"
             android:stepSize="1" />
     </LinearLayout>
 
@@ -117,16 +119,7 @@
             android:layout_gravity="center_vertical"
             android:isIndicator="false"
             android:numStars="5"
+            android:rating="5"
             android:stepSize="1" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_confirm"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="2dp"
-        android:background="@drawable/selector_btn_normal"
-        android:text="发表评论"
-        android:textColor="#fff"
-        android:textSize="16sp" />
 </LinearLayout>
