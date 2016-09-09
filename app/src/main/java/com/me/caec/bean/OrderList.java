@@ -95,7 +95,7 @@ public class OrderList {
             this.subOrders = subOrders;
         }
 
-        public static class SubOrdersBean {
+        public static class SubOrdersBean implements Serializable {
             private String receiver;
             private String status;
             private String returntime;
@@ -233,7 +233,7 @@ public class OrderList {
                 this.goods = goods;
             }
 
-            public static class GoodsBean {
+            public static class GoodsBean implements Serializable {
                 private String dealerId;
                 private int count;
                 private String img;

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -52,7 +54,7 @@ import java.util.Locale;
 
 /**
  * 订单列表
- * <p/>
+ * <p>
  * Created by yin on 2016/9/5.
  */
 public class OrderListPager {
@@ -109,9 +111,6 @@ public class OrderListPager {
         decimalFormat = new DecimalFormat("#.00");
 //        srlOrderList = (SwipeRefreshLayout) rootView.findViewById(R.id.srl_order_list);
         lvOrderList = (ListView) rootView.findViewById(R.id.lv_order_list);
-        lvOrderList.setEmptyView(rootView.findViewById(R.id.ll_empty));
-
-        getOrderList();
         lvOrderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -130,6 +129,9 @@ public class OrderListPager {
                 activity.startActivity(i);
             }
         });
+        lvOrderList.setEmptyView(rootView.findViewById(R.id.ll_empty));
+
+        getOrderList();
     }
 
     public View getRootView() {
@@ -508,6 +510,19 @@ public class OrderListPager {
             btnCancel = (Button) view.findViewById(R.id.btn_cancel);
             btnPay = (Button) view.findViewById(R.id.btn_pay);
             btnConfirm = (Button) view.findViewById(R.id.btn_confirm);
+
+            svGoods.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+//                    if (event.getAction() == MotionEvent.ACTION_UP) {
+//                        v.getParent().requestDisallowInterceptTouchEvent(false);
+//                    } else {
+//                        v.getParent().requestDisallowInterceptTouchEvent(true);
+//                    }
+                    return false;
+                }
+            });
 
             //再次购买
             btnBuyAgain.setOnClickListener(new View.OnClickListener() {
