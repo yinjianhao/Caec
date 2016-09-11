@@ -27,9 +27,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
 import com.me.caec.activity.CartActivity;
 import com.me.caec.activity.CommentActivity;
+import com.me.caec.activity.OrderDetailCancelActivity;
 import com.me.caec.activity.OrderDetailNormalActivity;
 import com.me.caec.activity.OrderDetailPayActivity;
 import com.me.caec.activity.OrderListActivity;
+import com.me.caec.bean.OrderDetailCancel;
 import com.me.caec.bean.OrderList;
 import com.me.caec.globle.Client;
 import com.me.caec.utils.DpTransforUtils;
@@ -54,7 +56,7 @@ import java.util.Locale;
 
 /**
  * 订单列表
- * <p>
+ * <p/>
  * Created by yin on 2016/9/5.
  */
 public class OrderListPager {
@@ -108,7 +110,7 @@ public class OrderListPager {
     }
 
     public void initData() {
-        decimalFormat = new DecimalFormat("#.00");
+        decimalFormat = new DecimalFormat("0.00");
 //        srlOrderList = (SwipeRefreshLayout) rootView.findViewById(R.id.srl_order_list);
         lvOrderList = (ListView) rootView.findViewById(R.id.lv_order_list);
         lvOrderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -120,12 +122,30 @@ public class OrderListPager {
                 Intent i;
                 if (status.equals("01") || status.equals("23")) {
                     i = new Intent(activity, OrderDetailPayActivity.class);
+                    i.putExtra("orderId", dataBean.getId());
+                    i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
                 } else {
-                    i = new Intent(activity, OrderDetailNormalActivity.class);
+                    OrderList.DataBean.SubOrdersBean subOrder = dataBean.getSubOrders().get(0);
+                    String subOrderStatus = subOrder.getStatus();
+
+                    if (subOrderStatus.equals("09") || subOrderStatus.equals("11")) {
+                        i = new Intent(activity, OrderDetailCancelActivity.class);
+                        i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
+                    } else {
+                        i = new Intent(activity, OrderDetailNormalActivity.class);
+                        i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
+                        i.putExtra("cancel", view.findViewById(R.id.btn_cancel).getVisibility() == View.VISIBLE);
+                        i.putExtra("cancelMoney", (boolean) view.findViewById(R.id.btn_cancel).getTag());
+                        i.putExtra("confirm", view.findViewById(R.id.btn_confirm).getVisibility() == View.VISIBLE);
+                        i.putExtra("comment", view.findViewById(R.id.btn_comment).getVisibility() == View.VISIBLE);
+                    }
+
+                    i.putExtra("orderId", subOrder.getId());
+
+                    i.putExtra("orderType", subOrder.getType());
+                    i.putExtra("payType", dataBean.getPayType());
                 }
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("order", dataBean);
-                i.putExtras(bundle);
+
                 activity.startActivity(i);
             }
         });
@@ -590,7 +610,7 @@ public class OrderListPager {
 
                     Intent i = new Intent(activity, CommentActivity.class);
                     i.putExtra("orderId", subOrderId);
-                    activity.startActivityForResult(i, OrderListActivity.CODE_COMMENT);
+                    activity.startActivity(i);
                 }
             });
 
@@ -618,7 +638,7 @@ public class OrderListPager {
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setSingleChoiceItems(reasons, -1, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(DialogInterface dialog, final int which) {
                             dialog.dismiss();
 
                             ConfirmDialog confirmDialog = new ConfirmDialog(activity);
@@ -630,7 +650,7 @@ public class OrderListPager {
                                     RequestParams params = new RequestParams(Client.CANCEL_ORDER_URL);
                                     params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
                                     params.addQueryStringParameter("id", finalOrderId);
-                                    params.addQueryStringParameter("reason", reasons[position]);
+                                    params.addQueryStringParameter("reason", reasons[which]);
 
                                     x.http().post(params, new Callback.CommonCallback<String>() {
                                         @Override
@@ -686,7 +706,7 @@ public class OrderListPager {
                 @Override
                 public void onClick(View v) {
                     int position = (int) tvTime.getTag();
-                    Toast.makeText(activity, "没办法付钱啊", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "没办法付钱啊!", Toast.LENGTH_SHORT).show();
                 }
             });
 

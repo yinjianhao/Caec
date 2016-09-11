@@ -38,7 +38,8 @@
         <activity android:name=".activity.CartActivity" />
         <activity android:name=".activity.CommentActivity" />
         <activity android:name=".activity.OrderDetailPayActivity" />
-        <activity android:name=".activity.OrderDetailNormalActivity"></activity>
+        <activity android:name=".activity.OrderDetailNormalActivity"/>
+        <activity android:name=".activity.OrderDetailCancelActivity"/>
     </application>
 
 </manifest>

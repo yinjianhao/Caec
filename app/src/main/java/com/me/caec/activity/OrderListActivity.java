@@ -35,8 +35,6 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
     @ViewInject(R.id.vp_pager)
     private ViewPager vpPager;
 
-    public static final int CODE_COMMENT = 1;  //code for 评论页面
-
     private String[] title = new String[]{"全部", "待付款", "待提车", "待收货", "待评价", "售后/退款"};
 
     private Adapter adapter;
@@ -156,19 +154,6 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
         @Override
         public CharSequence getPageTitle(int position) {
             return title[position];
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //判断是否更新数据
-        if (resultCode == 1) {  //resultCode  1成功 0失败
-            if (data.getBooleanExtra("update", false)) {
-                currentPager.initData();
-                Log.d("OrderListActivity", "update");
-            }
         }
     }
 

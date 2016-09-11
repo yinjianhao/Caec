@@ -48,13 +48,13 @@
             android:id="@+id/ll_take_photo"
             android:layout_width="55dp"
             android:layout_height="55dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/border_image"
             android:gravity="center">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
                 android:clickable="false"
                 android:src="@drawable/camera" />
         </LinearLayout>

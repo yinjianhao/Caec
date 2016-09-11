@@ -70,6 +70,9 @@ public class Client {
     //订单详情(已取消,审核中)
     public static final String ORDER_DETAIL_CANCEL_URL = SERVICE_URL + "/member/order/canceled";
 
+    //提车验证码
+    public static final String CAR_CODE_URL = SERVICE_URL + "/main/order/code";
+
     //加入购物车
     public static final String ADD_CART_URL = SERVICE_URL + "/shoppingcart/cart/shopping";
 

@@ -64,6 +64,24 @@ public class OrderUtils {
         return statusName;
     }
 
+    public static String payType2PayTypeName(String payType) {
+        String payTypeName = "";
+        switch (payType) {
+            case "1":
+                payTypeName = "支付宝支付";
+                break;
+            case "2":
+                payTypeName = "银联支付";
+                break;
+            case "4":
+                payTypeName = "优惠卷支付";
+                break;
+            default:
+                break;
+        }
+        return payTypeName;
+    }
+
     /**
      * 根据状态获取文字颜色
      *

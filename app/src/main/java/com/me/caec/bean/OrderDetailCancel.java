@@ -9,14 +9,14 @@ import java.util.List;
  */
 public class OrderDetailCancel {
 
-    private String result;
+    private int result;
     private DataBean data;
 
-    public String getResult() {
+    public int getResult() {
         return result;
     }
 
-    public void setResult(String result) {
+    public void setResult(int result) {
         this.result = result;
     }
 

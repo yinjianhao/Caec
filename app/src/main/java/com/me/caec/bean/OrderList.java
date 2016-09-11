@@ -38,7 +38,7 @@ public class OrderList {
         this.data = data;
     }
 
-    public static class DataBean implements Serializable {
+    public static class DataBean {
         private String id;
         private String time;
         private String status;
@@ -95,7 +95,7 @@ public class OrderList {
             this.subOrders = subOrders;
         }
 
-        public static class SubOrdersBean implements Serializable {
+        public static class SubOrdersBean {
             private String receiver;
             private String status;
             private String returntime;
@@ -233,7 +233,7 @@ public class OrderList {
                 this.goods = goods;
             }
 
-            public static class GoodsBean implements Serializable {
+            public static class GoodsBean {
                 private String dealerId;
                 private int count;
                 private String img;
