@@ -118,7 +118,7 @@ public class BaseClient {
     private static <T> void refreshToken(String url, Map<String, Object> map, final Class<T> beanClass, final BaseCallBack baseCallBack) {
         String phone = PreferencesUtils.getString(x.app(), "phone", "");
 
-//        post(RequestAddress.REFRESH_TOKEN_URL)
+//        post(RequestUrl.REFRESH_TOKEN_URL)
     }
 
     public interface BaseCallBack {

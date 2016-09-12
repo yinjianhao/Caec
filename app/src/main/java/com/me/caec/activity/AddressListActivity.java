@@ -3,7 +3,6 @@ package com.me.caec.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,12 +13,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.me.caec.R;
 import com.me.caec.bean.AddressList;
 import com.me.caec.bean.Location;
 import com.me.caec.globle.BaseClient;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.LocationUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
@@ -100,7 +98,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
      * 获取地址列表
      */
     private void getAddressList() {
-        RequestParams params = new RequestParams(RequestAddress.ADDRESS_LIST_URL);
+        RequestParams params = new RequestParams(RequestUrl.ADDRESS_LIST_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
 
 //        Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<AddressList>() {
@@ -138,7 +136,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
         Map<String, Object> map = new HashMap<>();
         map.put("token", PreferencesUtils.getString(this, "token", ""));
 
-        BaseClient.post(RequestAddress.ADDRESS_LIST_URL, map, AddressList.class, new BaseClient.BaseCallBack() {
+        BaseClient.post(RequestUrl.ADDRESS_LIST_URL, map, AddressList.class, new BaseClient.BaseCallBack() {
             @Override
             public void onSuccess(Object result) {
                 AddressList data = (AddressList) result;
@@ -289,7 +287,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
         }
 
         private void onCheckBoxClick(final int position) {
-            RequestParams params = new RequestParams(RequestAddress.SET_DEFAULT_ADDRESS_URL);
+            RequestParams params = new RequestParams(RequestUrl.SET_DEFAULT_ADDRESS_URL);
             params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
             params.addQueryStringParameter("id", addressList.get(position).getId());
 
@@ -346,7 +344,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void confirm() {
                     //发起请求
-                    RequestParams params = new RequestParams(RequestAddress.DELETE_ADDRESS_URL);
+                    RequestParams params = new RequestParams(RequestUrl.DELETE_ADDRESS_URL);
                     params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
                     params.addQueryStringParameter("id", addressList.get(position).getId());
 

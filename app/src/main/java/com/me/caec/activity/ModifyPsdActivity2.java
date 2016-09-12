@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.PreferencesUtils;
 
 import org.json.JSONException;
@@ -94,7 +94,7 @@ public class ModifyPsdActivity2 extends AppCompatActivity implements View.OnClic
         }
 
         //发起请求
-        RequestParams params = new RequestParams(RequestAddress.MODIFY_PSD_URL);
+        RequestParams params = new RequestParams(RequestUrl.MODIFY_PSD_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("mobile", phone);
         params.addQueryStringParameter("smsCode", msgCode);

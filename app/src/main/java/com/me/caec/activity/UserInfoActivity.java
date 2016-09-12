@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.me.caec.R;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.ImageUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
@@ -84,7 +84,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private void getUserInfo() {
         String token = PreferencesUtils.getString(this, "token", "");
-        RequestParams params = new RequestParams(RequestAddress.USER_INFO_URL);
+        RequestParams params = new RequestParams(RequestUrl.USER_INFO_URL);
         params.addQueryStringParameter("token", token);
 
         Callback.Cancelable cancelable = x.http().get(params, new Callback.CommonCallback<String>() {
@@ -240,7 +240,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void uploadImg(final Bitmap bitmap) {
         String base64 = ImageUtils.Bitmap2Base64(bitmap);
 
-        RequestParams params = new RequestParams(RequestAddress.UPLOAD_IMAGE_URL);
+        RequestParams params = new RequestParams(RequestUrl.UPLOAD_IMAGE_URL);
         params.addQueryStringParameter("biz", "0");
         params.addQueryStringParameter("file", base64);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));

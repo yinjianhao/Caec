@@ -12,7 +12,7 @@ import com.me.caec.activity.AddressListActivity;
 import com.me.caec.activity.LoginActivity;
 import com.me.caec.activity.OrderListActivity;
 import com.me.caec.activity.UserInfoActivity;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.ClientUtils;
 import com.me.caec.utils.PreferencesUtils;
 
@@ -82,7 +82,7 @@ public class MyFragment extends BaseFragment {
      */
     private void getOrderCount() {
         if (ClientUtils.isLogin(getActivity())) {
-            RequestParams params = new RequestParams(RequestAddress.ORDER_NUM_URL);
+            RequestParams params = new RequestParams(RequestUrl.ORDER_NUM_URL);
             params.addQueryStringParameter("token", PreferencesUtils.getString(getActivity(), "token", ""));
 
             x.http().get(params, new Callback.CommonCallback<String>() {

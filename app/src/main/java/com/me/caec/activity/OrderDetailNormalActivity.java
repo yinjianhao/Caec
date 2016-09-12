@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
 import com.me.caec.bean.OrderDetail;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.OrderUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
@@ -172,7 +172,7 @@ public class OrderDetailNormalActivity extends AppCompatActivity implements View
     }
 
     private void getOrderDetail() {
-        RequestParams params = new RequestParams(RequestAddress.ORDER_DETAIL_URL);
+        RequestParams params = new RequestParams(RequestUrl.ORDER_DETAIL_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("id", orderId);
 
@@ -312,7 +312,7 @@ public class OrderDetailNormalActivity extends AppCompatActivity implements View
     }
 
     private void getCarCode() {
-        RequestParams params = new RequestParams(RequestAddress.CAR_CODE_URL);
+        RequestParams params = new RequestParams(RequestUrl.CAR_CODE_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("orderId", orderId);
 
@@ -374,7 +374,7 @@ public class OrderDetailNormalActivity extends AppCompatActivity implements View
      * 再次购买
      */
     private void buyAgain() {
-        RequestParams params = new RequestParams(RequestAddress.ADD_CART_URL);
+        RequestParams params = new RequestParams(RequestUrl.ADD_CART_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("goods", goods.toString());
 
@@ -423,7 +423,7 @@ public class OrderDetailNormalActivity extends AppCompatActivity implements View
         dialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
             @Override
             public void confirm() {
-                RequestParams params = new RequestParams(RequestAddress.CONFIRM_RECEIPT_URL);
+                RequestParams params = new RequestParams(RequestUrl.CONFIRM_RECEIPT_URL);
                 params.addQueryStringParameter("token", PreferencesUtils.getString(OrderDetailNormalActivity.this, "token", ""));
                 params.addQueryStringParameter("id", orderId);
 
@@ -481,7 +481,7 @@ public class OrderDetailNormalActivity extends AppCompatActivity implements View
                 confirmDialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
                     @Override
                     public void confirm() {
-                        RequestParams params = new RequestParams(RequestAddress.CANCEL_ORDER_URL);
+                        RequestParams params = new RequestParams(RequestUrl.CANCEL_ORDER_URL);
                         params.addQueryStringParameter("token", PreferencesUtils.getString(OrderDetailNormalActivity.this, "token", ""));
                         params.addQueryStringParameter("id", orderId);
                         params.addQueryStringParameter("reason", reasons[which]);

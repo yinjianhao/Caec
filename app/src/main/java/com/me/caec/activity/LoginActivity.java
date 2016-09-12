@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.PreferencesUtils;
 
 import org.json.JSONException;
@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param psd   密码
      */
     private void login(String phone, String psd) {
-        RequestParams params = new RequestParams(RequestAddress.LOGIN_URL);
+        RequestParams params = new RequestParams(RequestUrl.LOGIN_URL);
         params.addQueryStringParameter("mobile", phone);
         params.addQueryStringParameter("password", psd);
 

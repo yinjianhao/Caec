@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.me.caec.R;
 import com.me.caec.bean.CartList;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.PreferencesUtils;
 
 import org.xutils.common.Callback;
@@ -44,7 +44,7 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
      * 获取购物车列表
      */
     private void getCartList() {
-        RequestParams params = new RequestParams(RequestAddress.CART_LIST_URL);
+        RequestParams params = new RequestParams(RequestUrl.CART_LIST_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(getActivity(), "token", ""));
         params.addQueryStringParameter("pageIndex", "1");
         params.addQueryStringParameter("pageSize", "20");

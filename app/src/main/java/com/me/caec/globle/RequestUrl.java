@@ -5,7 +5,7 @@ package com.me.caec.globle;
  * <p/>
  * Created by yin on 2016/8/30.
  */
-public class RequestAddress {
+public class RequestUrl {
     //服务器根地址
     public static final String SERVICE_URL = "http://61.186.243.111";
 

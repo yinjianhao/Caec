@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
-import com.me.caec.globle.RequestAddress;
+import com.me.caec.globle.RequestUrl;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -113,7 +113,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
      * 检查是否已注册
      */
     private void checkIsRegister(final String phone) {
-        RequestParams params = new RequestParams(RequestAddress.PHONE_ISREGISTER_URL);
+        RequestParams params = new RequestParams(RequestUrl.PHONE_ISREGISTER_URL);
         params.addQueryStringParameter("phone", phone);
 
         Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
@@ -153,7 +153,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
      * 验证图片验证码
      */
     private void checkImageCode() {
-        RequestParams params = new RequestParams(RequestAddress.CHECK_IMAGE_CODE_URL);
+        RequestParams params = new RequestParams(RequestUrl.CHECK_IMAGE_CODE_URL);
         params.addQueryStringParameter("phone", etPhone.getText().toString());
         params.addQueryStringParameter("picCode", etCode.getText().toString());
 
@@ -233,7 +233,7 @@ public class ForgetPsdActivity extends AppCompatActivity implements View.OnClick
     private void getImageCode() {
         String phone = etPhone.getText().toString();
         if(phoneRule.matches(phone)) {
-            x.image().bind(ivCode, RequestAddress.IMAGE_CODE_URL + "?phone=" + phone + "&_=" + Math.random());
+            x.image().bind(ivCode, RequestUrl.IMAGE_CODE_URL + "?phone=" + phone + "&_=" + Math.random());
         } else {
             Toast.makeText(this, "请输入正确的手机号码", Toast.LENGTH_SHORT).show();
         }
