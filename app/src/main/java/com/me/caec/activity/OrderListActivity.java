@@ -39,7 +39,7 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
 
     private Adapter adapter;
 
-    private OrderListPager currentPager;   //当前页面
+    private int currentPosition;   //当前页面
     private OrderListPager allPager;
     private OrderListPager unpaidPager;
     private OrderListPager uncarPager;
@@ -65,7 +65,62 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
         tlTab.setupWithViewPager(vpPager);
 
         Intent intent = getIntent();
+        vpPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                currentPosition = position;
+                initCurrentPagerData();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         vpPager.setCurrentItem(intent.getIntExtra("index", 0));  //设置选中项
+    }
+
+    private void initCurrentPagerData() {
+        switch (currentPosition) {
+            case 0:
+                if (allPager != null) {
+                    allPager.initData();
+                }
+                break;
+            case 1:
+                if (unpaidPager != null) {
+                    unpaidPager.initData();
+                }
+                break;
+            case 2:
+                if (uncarPager != null) {
+                    uncarPager.initData();
+                }
+                break;
+            case 3:
+                if (unreceivedPager != null) {
+                    unreceivedPager.initData();
+                }
+                break;
+            case 4:
+                if (uncommentPager != null) {
+                    uncommentPager.initData();
+                }
+                break;
+            case 5:
+                if (serviecePager != null) {
+                    serviecePager.initData();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -94,54 +149,53 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View view = null;
-            Log.d("OrderListActivity", String.valueOf(position));
+
             switch (position) {
                 case 0:
                     if (allPager == null) {
                         allPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_ALL);
+                        allPager.initData();
                     }
-                    currentPager = allPager;
                     view = allPager.getRootView();
                     break;
                 case 1:
                     if (unpaidPager == null) {
                         unpaidPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNPAID);
+                        unpaidPager.initData();
                     }
-                    currentPager = unpaidPager;
                     view = unpaidPager.getRootView();
                     break;
                 case 2:
                     if (uncarPager == null) {
                         uncarPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNCAR);
+                        uncarPager.initData();
                     }
-                    currentPager = uncarPager;
                     view = uncarPager.getRootView();
                     break;
                 case 3:
                     if (unreceivedPager == null) {
                         unreceivedPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNRECEIVED);
+                        unreceivedPager.initData();
                     }
-                    currentPager = unreceivedPager;
                     view = unreceivedPager.getRootView();
                     break;
                 case 4:
                     if (uncommentPager == null) {
                         uncommentPager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_UNCOMMENT);
+                        uncommentPager.initData();
                     }
-                    currentPager = uncommentPager;
                     view = uncommentPager.getRootView();
                     break;
                 case 5:
                     if (serviecePager == null) {
                         serviecePager = new OrderListPager(OrderListActivity.this, OrderListPager.TYPE_SERVICE);
+                        serviecePager.initData();
                     }
-                    currentPager = serviecePager;
                     view = serviecePager.getRootView();
                     break;
                 default:
                     break;
             }
-            currentPager.initData();
             container.addView(view, 0);
             return view;
         }
@@ -162,7 +216,7 @@ public class OrderListActivity extends AppCompatActivity implements View.OnClick
         super.onNewIntent(intent);
         Log.d("OrderListActivity", String.valueOf(intent.getBooleanExtra("update", false)));
         if (intent.getBooleanExtra("update", false)) {
-            currentPager.initData();
+            initCurrentPagerData();
         }
     }
 }

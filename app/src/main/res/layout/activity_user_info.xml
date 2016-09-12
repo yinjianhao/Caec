@@ -10,6 +10,7 @@
     <include layout="@layout/title_bar" />
 
     <LinearLayout
+        android:id="@+id/ll_head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -24,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#fff"
+            android:clickable="false"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="我的头像"
@@ -33,6 +35,7 @@
             android:id="@+id/iv_head"
             android:layout_width="42dp"
             android:layout_height="42dp"
+            android:clickable="false"
             android:src="@drawable/user_photo" />
 
         <ImageView

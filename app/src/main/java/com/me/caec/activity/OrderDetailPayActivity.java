@@ -122,7 +122,7 @@ public class OrderDetailPayActivity extends AppCompatActivity implements View.On
                     countTime--;
                     if (countTime > 0) {
                         String time = processTime();
-                        tvDown.setText(time);
+                        tvDown.setText("付款剩余" + time);
                         tvDown2.setText(time);
                         handler.sendEmptyMessageDelayed(1, 1000);
                     } else {
@@ -311,8 +311,11 @@ public class OrderDetailPayActivity extends AppCompatActivity implements View.On
             Date systemTime = format.parse(orderDetailPay.getSysTime());
             Date endTime = format.parse(orderDetailPay.getEndTime());
 
-            countTime = endTime.getTime() - systemTime.getTime();
+            countTime = (endTime.getTime() - systemTime.getTime()) / 1000;
 
+            String time = processTime();
+            tvDown.setText("付款剩余" + time);
+            tvDown2.setText(time);
             handler.sendEmptyMessageDelayed(1, 1000);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -320,11 +323,11 @@ public class OrderDetailPayActivity extends AppCompatActivity implements View.On
     }
 
     private String processTime() {
-        long l = countTime / 1000 / 60 / 60;
-        long l1 = countTime / 1000 / 60 % 60;
-        long l2 = countTime / 1000 % 60;
+        long l = countTime / 60 / 60;
+        long l1 = countTime / 60 % 60;
+        long l2 = countTime % 60;
 
-        return "付款剩余" + l + "时" + l1 + "分" + l2 + "秒";
+        return l + "时" + l1 + "分" + l2 + "秒";
     }
 
     private void setButton() {

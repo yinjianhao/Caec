@@ -1,19 +1,31 @@
 package com.me.caec.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.globle.Client;
+import com.me.caec.utils.ImageUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
+import com.me.caec.view.TakePhotoPopupWindow;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +36,9 @@ import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
+
+    @ViewInject(R.id.ll_head)
+    private LinearLayout llHead;
 
     @ViewInject(R.id.iv_head)
     private ImageView ivHead;
@@ -52,6 +67,10 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     @ViewInject(R.id.ll_modify)
     private LinearLayout llModify;
 
+    private static final int PHOTO_REQUEST_CAREMA = 1;// 拍照
+    private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
+    private static final int PHOTO_REQUEST_CUT = 3;// 结果
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +87,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         tvBack.setOnClickListener(this);
         tvLoginOut.setOnClickListener(this);
         llModify.setOnClickListener(this);
+        llHead.setOnClickListener(this);
     }
 
     private void getUserInfo() {
@@ -128,9 +148,40 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             case R.id.ll_modify:
                 startActivity(new Intent(this, ModifyPsdActivity.class));
                 break;
+            case R.id.ll_head:
+                takePhoto(v);
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 拍照或从相册选
+     */
+    private void takePhoto(View v) {
+
+        TakePhotoPopupWindow popupWindow = new TakePhotoPopupWindow(this, new TakePhotoPopupWindow.OnClickListener() {
+            @Override
+            public void onTakePhoto() {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, PHOTO_REQUEST_CAREMA);
+            }
+
+            @Override
+            public void onPickPhoto() {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+                intent.setType("image/*");
+                intent.putExtra("crop", "true");
+                intent.putExtra("aspectX", 1);
+                intent.putExtra("aspectY", 1);
+                intent.putExtra("outputX", 200);
+                intent.putExtra("outputY", 200);
+                intent.putExtra("return-data", true);
+                startActivityForResult(intent, PHOTO_REQUEST_GALLERY);
+            }
+        });
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.TOP, 0, 0);
     }
 
     private void loginOut() {
@@ -165,5 +216,109 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         if (token.isEmpty()) {
             finish();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PHOTO_REQUEST_GALLERY) {
+            // 从相册返回的数据
+            if (data != null) {
+                crop(data.getData());
+            }
+        } else if (requestCode == PHOTO_REQUEST_CAREMA) {
+            // 从相机返回的数据
+            if (data != null) {
+                Bitmap bitmap = data.getParcelableExtra("data");
+                crop(bitmap);
+            }
+        } else if (requestCode == PHOTO_REQUEST_CUT) {
+            // 从剪切图片返回的数据
+            if (data != null) {
+                Bitmap bitmap = data.getParcelableExtra("data");
+
+                uploadImg(bitmap);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * 上传图片
+     */
+    private void uploadImg(final Bitmap bitmap) {
+        String base64 = ImageUtils.Bitmap2Base64(bitmap);
+
+        RequestParams params = new RequestParams(Client.UPLOAD_IMAGE_URL);
+        params.addQueryStringParameter("biz", "0");
+        params.addQueryStringParameter("file", base64);
+        params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
+
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (jsonObject.getInt("result") == 0) {
+                        Log.d("upload", jsonObject.getJSONObject("data").getString("url"));
+                        ivHead.setImageBitmap(bitmap);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                ex.printStackTrace();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    private void crop(Bitmap bitmap) {
+        // 裁剪图片意图
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.putExtra("data", bitmap);
+        intent.putExtra("crop", "true");
+        // 裁剪框的比例，1：1
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // 裁剪后输出图片的尺寸大小
+        intent.putExtra("outputX", 200);
+        intent.putExtra("outputY", 200);
+
+        intent.putExtra("outputFormat", "PNG");// 图片格式
+        intent.putExtra("noFaceDetection", true);// 取消人脸识别
+        intent.putExtra("return-data", true);
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CUT
+        startActivityForResult(intent, PHOTO_REQUEST_CUT);
+    }
+
+    private void crop(Uri uri) {
+        // 裁剪图片意图
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        // 裁剪框的比例，1：1
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // 裁剪后输出图片的尺寸大小
+        intent.putExtra("outputX", 200);
+        intent.putExtra("outputY", 200);
+
+        intent.putExtra("outputFormat", "PNG");// 图片格式
+        intent.putExtra("noFaceDetection", true);// 取消人脸识别
+        intent.putExtra("return-data", true);
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CUT
+        startActivityForResult(intent, PHOTO_REQUEST_CUT);
     }
 }

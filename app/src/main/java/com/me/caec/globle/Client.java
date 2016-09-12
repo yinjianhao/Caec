@@ -9,6 +9,9 @@ public class Client {
     //服务器根地址
     public static final String SERVICE_URL = "http://61.186.243.111";
 
+    //图片上传
+    public static final String UPLOAD_IMAGE_URL = SERVICE_URL + "/member/attachment/base64/upload";
+
     //注册
     public static final String REGISTER_URL = SERVICE_URL + "/main/user/register";
 
@@ -73,9 +76,6 @@ public class Client {
     //提车验证码
     public static final String CAR_CODE_URL = SERVICE_URL + "/main/order/code";
 
-    //加入购物车
-    public static final String ADD_CART_URL = SERVICE_URL + "/shoppingcart/cart/shopping";
-
     //确认收货
     public static final String CONFIRM_RECEIPT_URL = SERVICE_URL + "/member/order/complete";
 
@@ -87,4 +87,25 @@ public class Client {
 
     //发表评价
     public static final String PUBILSH_COMMENT_URL = SERVICE_URL + "/member/assess/publishAll";
+
+    //购物车列表
+    public static final String CART_LIST_URL = SERVICE_URL + "/shoppingcart/cart/info";
+
+    //购物车条目修改
+    public static final String CART_MODIFY_URL = SERVICE_URL + "/shoppingcart/cart/modify";
+
+    //加入购物车
+    public static final String ADD_CART_URL = SERVICE_URL + "/shoppingcart/cart/shopping";
+
+    //删除购物车商品
+    public static final String CART_DELETE_URL = SERVICE_URL + "/shoppingcart/cart/clean";
+
+    //获取购物车总数
+    public static final String CART_NUM_URL = SERVICE_URL + "/shoppingcart/cart/overview";
+
+    //获取确认订单数据
+    public static final String CONFIRM_LIST_URL = SERVICE_URL + "/main/order/unconfirm";
+
+    //提交订单
+    public static final String CONFIRM_ORDER_URL = SERVICE_URL + "/main/order/confirm";
 }
