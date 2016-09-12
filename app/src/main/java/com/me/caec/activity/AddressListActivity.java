@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +18,8 @@ import com.alibaba.fastjson.JSON;
 import com.me.caec.R;
 import com.me.caec.bean.AddressList;
 import com.me.caec.bean.Location;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.BaseClient;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.LocationUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
@@ -31,7 +31,9 @@ import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddressListActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -98,15 +100,50 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
      * 获取地址列表
      */
     private void getAddressList() {
-        RequestParams params = new RequestParams(Client.ADDRESS_LIST_URL);
-        params.addBodyParameter("token", PreferencesUtils.getString(this, "token", ""));
+        RequestParams params = new RequestParams(RequestAddress.ADDRESS_LIST_URL);
+        params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
 
-        Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
+//        Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<AddressList>() {
+//            @Override
+//            public void onSuccess(AddressList result) {
+//                if (result.getResult() == 0) {
+//                    addressList = result.getData();
+//                    if (adapter == null) {
+//                        adapter = new Adapter();
+//                        lvAddress.setAdapter(adapter);
+//                    } else {
+//                        adapter.notifyDataSetChanged();
+//                    }
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onError(Throwable ex, boolean isOnCallback) {
+//                Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCancelled(CancelledException cex) {
+//
+//            }
+//
+//            @Override
+//            public void onFinished() {
+//
+//            }
+//        });
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
+
+        BaseClient.post(RequestAddress.ADDRESS_LIST_URL, map, AddressList.class, new BaseClient.BaseCallBack() {
             @Override
-            public void onSuccess(String string) {
-                AddressList list = JSON.parseObject(string, AddressList.class);
-                if (list.getResult() == 0) {
-                    addressList = list.getData();
+            public void onSuccess(Object result) {
+                AddressList data = (AddressList) result;
+                if (data.getResult() == 0) {
+                    addressList = data.getData();
                     if (adapter == null) {
                         adapter = new Adapter();
                         lvAddress.setAdapter(adapter);
@@ -120,11 +157,11 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
+            public void onCancelled(Callback.CancelledException cex) {
 
             }
 
@@ -252,7 +289,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
         }
 
         private void onCheckBoxClick(final int position) {
-            RequestParams params = new RequestParams(Client.SET_DEFAULT_ADDRESS_URL);
+            RequestParams params = new RequestParams(RequestAddress.SET_DEFAULT_ADDRESS_URL);
             params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
             params.addQueryStringParameter("id", addressList.get(position).getId());
 
@@ -309,7 +346,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void confirm() {
                     //发起请求
-                    RequestParams params = new RequestParams(Client.DELETE_ADDRESS_URL);
+                    RequestParams params = new RequestParams(RequestAddress.DELETE_ADDRESS_URL);
                     params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
                     params.addQueryStringParameter("id", addressList.get(position).getId());
 

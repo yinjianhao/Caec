@@ -12,11 +12,9 @@ import com.me.caec.activity.AddressListActivity;
 import com.me.caec.activity.LoginActivity;
 import com.me.caec.activity.OrderListActivity;
 import com.me.caec.activity.UserInfoActivity;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.ClientUtils;
 import com.me.caec.utils.PreferencesUtils;
-import com.me.caec.view.LoadingDialog;
-import com.me.caec.view.pagerView.OrderListPager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,7 +82,7 @@ public class MyFragment extends BaseFragment {
      */
     private void getOrderCount() {
         if (ClientUtils.isLogin(getActivity())) {
-            RequestParams params = new RequestParams(Client.ORDER_NUM_URL);
+            RequestParams params = new RequestParams(RequestAddress.ORDER_NUM_URL);
             params.addQueryStringParameter("token", PreferencesUtils.getString(getActivity(), "token", ""));
 
             x.http().get(params, new Callback.CommonCallback<String>() {
@@ -166,7 +164,11 @@ public class MyFragment extends BaseFragment {
             tvLogin.setVisibility(View.GONE);
             llUserInfo.setVisibility(View.VISIBLE);
 
-            x.image().bind(ivHead, headImgUrl);
+            ImageOptions.Builder builder = new ImageOptions.Builder();
+            builder.setCircular(true);
+            ImageOptions op = builder.build();
+
+            x.image().bind(ivHead, headImgUrl, op);
             tvAccount.setText(phone);
             tvName.setText(nickName);
         } else {

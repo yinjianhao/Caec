@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +28,8 @@ import com.me.caec.activity.CommentActivity;
 import com.me.caec.activity.OrderDetailCancelActivity;
 import com.me.caec.activity.OrderDetailNormalActivity;
 import com.me.caec.activity.OrderDetailPayActivity;
-import com.me.caec.activity.OrderListActivity;
-import com.me.caec.bean.OrderDetailCancel;
 import com.me.caec.bean.OrderList;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.DpTransforUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
@@ -162,7 +158,7 @@ public class OrderListPager {
      * 请求订单数据
      */
     private void getOrderList() {
-        RequestParams params = new RequestParams(Client.ORDER_LIST_URL);
+        RequestParams params = new RequestParams(RequestAddress.ORDER_LIST_URL);
         params.addBodyParameter("token", PreferencesUtils.getString(activity, "token", ""));
         params.addBodyParameter("pageSize", "20");
         params.addBodyParameter("pageIndex", "1");
@@ -562,7 +558,7 @@ public class OrderListPager {
                         }
                     }
 
-                    RequestParams params = new RequestParams(Client.ADD_CART_URL);
+                    RequestParams params = new RequestParams(RequestAddress.ADD_CART_URL);
                     params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
                     params.addQueryStringParameter("goods", jsonArray.toString());
 
@@ -647,7 +643,7 @@ public class OrderListPager {
                             confirmDialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
                                 @Override
                                 public void confirm() {
-                                    RequestParams params = new RequestParams(Client.CANCEL_ORDER_URL);
+                                    RequestParams params = new RequestParams(RequestAddress.CANCEL_ORDER_URL);
                                     params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
                                     params.addQueryStringParameter("id", finalOrderId);
                                     params.addQueryStringParameter("reason", reasons[which]);
@@ -723,7 +719,7 @@ public class OrderListPager {
                     dialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
                         @Override
                         public void confirm() {
-                            RequestParams params = new RequestParams(Client.CONFIRM_RECEIPT_URL);
+                            RequestParams params = new RequestParams(RequestAddress.CONFIRM_RECEIPT_URL);
                             params.addQueryStringParameter("token", PreferencesUtils.getString(activity, "token", ""));
                             params.addQueryStringParameter("id", subOrderId);
                             x.http().post(params, new Callback.CommonCallback<String>() {

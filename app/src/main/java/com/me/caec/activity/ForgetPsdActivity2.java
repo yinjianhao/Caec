@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -156,7 +156,7 @@ public class ForgetPsdActivity2 extends AppCompatActivity implements View.OnClic
      * 发送短信验证码
      */
     private void sendMsgCode() {
-        RequestParams params = new RequestParams(Client.MSG_CODE_URL);
+        RequestParams params = new RequestParams(RequestAddress.MSG_CODE_URL);
         params.addQueryStringParameter("phone", phone);
         params.addQueryStringParameter("picCode", imgCode);
         params.addQueryStringParameter("biz", "2");
@@ -197,7 +197,7 @@ public class ForgetPsdActivity2 extends AppCompatActivity implements View.OnClic
     }
 
     private void checkMsgCode() {
-        RequestParams params = new RequestParams(Client.CHECK_MSG_CODE_URL);
+        RequestParams params = new RequestParams(RequestAddress.CHECK_MSG_CODE_URL);
         params.addQueryStringParameter("phone", phone);
         params.addQueryStringParameter("code", etCode.getText().toString());
         params.addQueryStringParameter("biz", "2");

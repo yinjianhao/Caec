@@ -9,6 +9,7 @@ import java.util.List;
  * @auther yjh
  * @date 2016/9/1
  */
+
 public class AddressList {
 
     private int result;
@@ -31,7 +32,7 @@ public class AddressList {
         this.data = data;
     }
 
-    public static class DataBean implements Serializable{
+    public static class DataBean implements Serializable {
         private int provinceId;
         private String id;
         private String zip;

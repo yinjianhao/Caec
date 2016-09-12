@@ -20,8 +20,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
 import com.me.caec.bean.CommentList;
-import com.me.caec.bean.OrderList;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.PreferencesUtils;
 
 import org.json.JSONException;
@@ -93,7 +92,7 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
      * 获取商品评论信息
      */
     private void getCommentDetail() {
-        RequestParams params = new RequestParams(Client.COMMENT_LIST_URL);
+        RequestParams params = new RequestParams(RequestAddress.COMMENT_LIST_URL);
         params.addBodyParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addBodyParameter("orderId", orderId);
 
@@ -171,7 +170,7 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         //发起请求
-        RequestParams params = new RequestParams(Client.PUBILSH_COMMENT_URL);
+        RequestParams params = new RequestParams(RequestAddress.PUBILSH_COMMENT_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("orderId", orderId);
         params.addQueryStringParameter("goods", jsonArray.toString());

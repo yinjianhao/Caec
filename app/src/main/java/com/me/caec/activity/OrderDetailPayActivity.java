@@ -3,7 +3,6 @@ package com.me.caec.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,13 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
-import com.me.caec.bean.OrderDetail;
 import com.me.caec.bean.OrderDetailPay;
-import com.me.caec.bean.OrderList;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.ImageUtils;
 import com.me.caec.utils.OrderUtils;
 import com.me.caec.utils.PreferencesUtils;
@@ -33,7 +28,6 @@ import com.me.caec.view.ConfirmDialog;
 import org.json.JSONException;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
-import org.xutils.image.ImageOptions;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
@@ -161,7 +155,7 @@ public class OrderDetailPayActivity extends AppCompatActivity implements View.On
      * 获取订单详情信息
      */
     private void getOrderDetail() {
-        RequestParams params = new RequestParams(Client.ORDER_DETAIL_PAY_URL);
+        RequestParams params = new RequestParams(RequestAddress.ORDER_DETAIL_PAY_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("id", orderId);
 
@@ -380,7 +374,7 @@ public class OrderDetailPayActivity extends AppCompatActivity implements View.On
                 confirmDialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
                     @Override
                     public void confirm() {
-                        RequestParams params = new RequestParams(Client.CANCEL_ORDER_URL);
+                        RequestParams params = new RequestParams(RequestAddress.CANCEL_ORDER_URL);
                         params.addQueryStringParameter("token", PreferencesUtils.getString(OrderDetailPayActivity.this, "token", ""));
                         params.addQueryStringParameter("id", orderId);
                         params.addQueryStringParameter("reason", reasons[which]);

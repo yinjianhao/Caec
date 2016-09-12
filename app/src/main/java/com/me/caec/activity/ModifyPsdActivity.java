@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.PreferencesUtils;
 
 import org.json.JSONException;
@@ -184,14 +184,14 @@ public class ModifyPsdActivity extends AppCompatActivity implements View.OnClick
      * 获取图片验证码
      */
     private void getImageCode(String phone) {
-        x.image().bind(ivImgCode, Client.IMAGE_CODE_URL + "?phone=" + phone + "&_=" + Math.random());
+        x.image().bind(ivImgCode, RequestAddress.IMAGE_CODE_URL + "?phone=" + phone + "&_=" + Math.random());
     }
 
     /**
      * 验证图片验证码
      */
     private void checkImageCode() {
-        RequestParams params = new RequestParams(Client.CHECK_IMAGE_CODE_URL);
+        RequestParams params = new RequestParams(RequestAddress.CHECK_IMAGE_CODE_URL);
         params.addQueryStringParameter("phone", etPhone.getText().toString());
         params.addQueryStringParameter("picCode", etImgCode.getText().toString());
 
@@ -249,7 +249,7 @@ public class ModifyPsdActivity extends AppCompatActivity implements View.OnClick
      * 发送短信验证码
      */
     private void sendMsgCode() {
-        RequestParams params = new RequestParams(Client.MSG_CODE_URL);
+        RequestParams params = new RequestParams(RequestAddress.MSG_CODE_URL);
         params.addQueryStringParameter("phone", phone);
         params.addQueryStringParameter("picCode", etImgCode.getText().toString());
         params.addQueryStringParameter("biz", "1");
@@ -293,7 +293,7 @@ public class ModifyPsdActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void checkMsgCode() {
-        RequestParams params = new RequestParams(Client.CHECK_MSG_CODE_URL);
+        RequestParams params = new RequestParams(RequestAddress.CHECK_MSG_CODE_URL);
         params.addQueryStringParameter("phone", phone);
         params.addQueryStringParameter("code", etMsgCode.getText().toString());
         params.addQueryStringParameter("biz", "1");

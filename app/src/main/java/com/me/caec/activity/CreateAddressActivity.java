@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.me.caec.R;
 import com.me.caec.bean.AddressList;
 import com.me.caec.bean.Location;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.LocationUtils;
 import com.me.caec.utils.PreferencesUtils;
 
@@ -256,7 +256,7 @@ public class CreateAddressActivity extends AppCompatActivity implements View.OnC
         }
 
         //发起请求
-        RequestParams params = new RequestParams(type == FLAG_ADDRESS_CREATE ? Client.CREATE_ADDRESS_URL : Client.EDIT_ADDRESS_URL);
+        RequestParams params = new RequestParams(type == FLAG_ADDRESS_CREATE ? RequestAddress.CREATE_ADDRESS_URL : RequestAddress.EDIT_ADDRESS_URL);
         if (type == FLAG_ADDRESS_EDIT) {
             params.addBodyParameter("id", dataBean.getId());
         }

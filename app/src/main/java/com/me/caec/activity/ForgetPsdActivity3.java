@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,7 +93,7 @@ public class ForgetPsdActivity3 extends AppCompatActivity implements View.OnClic
             return;
         }
 
-        RequestParams params = new RequestParams(Client.FORGET_PSD_URL);
+        RequestParams params = new RequestParams(RequestAddress.FORGET_PSD_URL);
         params.addQueryStringParameter("mobile", phone);
         params.addQueryStringParameter("picCode", imgCode);
         params.addQueryStringParameter("smsCode", msgCode);

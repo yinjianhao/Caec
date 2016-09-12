@@ -1,7 +1,5 @@
 package com.me.caec.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -10,18 +8,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.me.caec.R;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.ImageUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.ConfirmDialog;
@@ -31,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
-import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
@@ -92,7 +84,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private void getUserInfo() {
         String token = PreferencesUtils.getString(this, "token", "");
-        RequestParams params = new RequestParams(Client.USER_INFO_URL);
+        RequestParams params = new RequestParams(RequestAddress.USER_INFO_URL);
         params.addQueryStringParameter("token", token);
 
         Callback.Cancelable cancelable = x.http().get(params, new Callback.CommonCallback<String>() {
@@ -248,7 +240,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void uploadImg(final Bitmap bitmap) {
         String base64 = ImageUtils.Bitmap2Base64(bitmap);
 
-        RequestParams params = new RequestParams(Client.UPLOAD_IMAGE_URL);
+        RequestParams params = new RequestParams(RequestAddress.UPLOAD_IMAGE_URL);
         params.addQueryStringParameter("biz", "0");
         params.addQueryStringParameter("file", base64);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));

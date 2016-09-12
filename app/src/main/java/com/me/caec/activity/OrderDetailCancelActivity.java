@@ -18,8 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
 import com.me.caec.bean.OrderDetailCancel;
-import com.me.caec.bean.OrderList;
-import com.me.caec.globle.Client;
+import com.me.caec.globle.RequestAddress;
 import com.me.caec.utils.OrderUtils;
 import com.me.caec.utils.PreferencesUtils;
 
@@ -169,7 +168,7 @@ public class OrderDetailCancelActivity extends AppCompatActivity implements View
      * 获取订单详情数据
      */
     private void getOrderDetail() {
-        RequestParams params = new RequestParams(Client.ORDER_DETAIL_CANCEL_URL);
+        RequestParams params = new RequestParams(RequestAddress.ORDER_DETAIL_CANCEL_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("id", orderId);
 
@@ -289,7 +288,7 @@ public class OrderDetailCancelActivity extends AppCompatActivity implements View
      * 获取提车验证码
      */
     private void getCarCode() {
-        RequestParams params = new RequestParams(Client.CAR_CODE_URL);
+        RequestParams params = new RequestParams(RequestAddress.CAR_CODE_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("orderId", orderId);
 
@@ -359,7 +358,7 @@ public class OrderDetailCancelActivity extends AppCompatActivity implements View
      */
     private void buyAgain() {
 
-        RequestParams params = new RequestParams(Client.ADD_CART_URL);
+        RequestParams params = new RequestParams(RequestAddress.ADD_CART_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
         params.addQueryStringParameter("goods", goods.toString());
 
