@@ -1,10 +1,8 @@
 package com.me.caec.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Xml;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -12,22 +10,15 @@ import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.bean.Login;
-import com.me.caec.bean.RSA;
 import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
-import com.me.caec.utils.Base64Utils;
 import com.me.caec.utils.PreferencesUtils;
-import com.me.caec.utils.RSAUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xutils.common.Callback;
-import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
-import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         params.put("mobile", phone);
         params.put("password", psd);
 
-        BaseClient.post(RequestUrl.LOGIN_URL, params, Login.class, new BaseClient.BaseCallBack() {
+        BaseClient.post(this, RequestUrl.LOGIN_URL, params, Login.class, new BaseClient.BaseCallBack() {
             @Override
             public void onSuccess(Object result) {
                 Login loginData = (Login) result;
@@ -115,6 +106,11 @@ public class LoginActivity extends AppCompatActivity {
                     PreferencesUtils.setString(LoginActivity.this, "phone", dataBean.getMobile());
                     PreferencesUtils.setString(LoginActivity.this, "nickName", dataBean.getNickname());
                     PreferencesUtils.setString(LoginActivity.this, "headImgUrl", dataBean.getImg());
+
+                    //设置更新数据
+                    Intent i = new Intent();
+                    i.putExtra("reload", true);
+                    setResult(RESULT_OK, i);
                     finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
@@ -141,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
 //    private void login(final String phone, final String psd) {
 //
 //        //获取公钥加密
-//        BaseClient.get(RequestUrl.PUBILIC_KEY_URL, null, RSA.class, new BaseClient.BaseCallBack() {
+//        BaseClient.get(this, RequestUrl.PUBILIC_KEY_URL, null, RSA.class, new BaseClient.BaseCallBack() {
 //            @Override
 //            public void onSuccess(Object result) {
 //                RSA data = (RSA) result;

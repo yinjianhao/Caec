@@ -95,7 +95,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         Map<String, String> map = new HashMap<>();
         map.put("token", PreferencesUtils.getString(this, "token", ""));
 
-        BaseClient.get(RequestUrl.USER_INFO_URL, map, UserInfo.class, new BaseClient.BaseCallBack() {
+        BaseClient.get(this, RequestUrl.USER_INFO_URL, map, UserInfo.class, new BaseClient.BaseCallBack() {
             @Override
             public void onSuccess(Object result) {
                 UserInfo data = (UserInfo) result;
@@ -256,7 +256,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         map.put("file", base64);
         map.put("token", PreferencesUtils.getString(this, "token", ""));
 
-        BaseClient.post(RequestUrl.UPLOAD_IMAGE_URL, map, UploadImage.class, new BaseClient.BaseCallBack() {
+        BaseClient.post(this, RequestUrl.UPLOAD_IMAGE_URL, map, UploadImage.class, new BaseClient.BaseCallBack() {
             @Override
             public void onSuccess(Object result) {
                 UploadImage data = (UploadImage) result;

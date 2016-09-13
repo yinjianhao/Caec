@@ -105,7 +105,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
         Map<String, Object> map = new HashMap<>();
         map.put("token", PreferencesUtils.getString(this, "token", ""));
 
-        BaseClient.post(RequestUrl.ADDRESS_LIST_URL, map, AddressList.class, new BaseClient.BaseCallBack() {
+        BaseClient.post(this, RequestUrl.ADDRESS_LIST_URL, map, AddressList.class, new BaseClient.BaseCallBack() {
             @Override
             public void onSuccess(Object result) {
                 AddressList data = (AddressList) result;
@@ -124,7 +124,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -261,7 +261,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
             map.put("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
             map.put("id", addressList.get(position).getId());
 
-            BaseClient.post(RequestUrl.SET_DEFAULT_ADDRESS_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
+            BaseClient.post(AddressListActivity.this, RequestUrl.SET_DEFAULT_ADDRESS_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
                 @Override
                 public void onSuccess(Object result) {
                     BaseBean data = (BaseBean) result;
@@ -314,7 +314,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                     map.put("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
                     map.put("id", addressList.get(position).getId());
 
-                    BaseClient.post(RequestUrl.DELETE_ADDRESS_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
+                    BaseClient.post(AddressListActivity.this, RequestUrl.DELETE_ADDRESS_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
                         @Override
                         public void onSuccess(Object result) {
                             BaseBean data = (BaseBean) result;

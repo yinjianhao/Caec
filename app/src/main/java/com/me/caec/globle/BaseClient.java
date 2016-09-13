@@ -1,5 +1,6 @@
 package com.me.caec.globle;
 
+import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
@@ -23,14 +24,8 @@ public class BaseClient {
 
     /**
      * 发送get请求
-     *
-     * @param url
-     * @param map
-     * @param resultClass
-     * @param baseCallBack
-     * @return
      */
-    public static Callback.Cancelable get(String url, Map<String, String> map, final Class<?> resultClass, final BaseCallBack baseCallBack) {
+    public static Callback.Cancelable get(final Context ctx, String url, Map<String, String> map, final Class<?> resultClass, final BaseCallBack baseCallBack) {
         RequestParams params = new RequestParams(url);
         if (map != null) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -44,7 +39,7 @@ public class BaseClient {
                 BaseBean baseBean = JSON.parseObject(result, BaseBean.class);
 
                 if (baseBean.getResult() == -1) {  //token过期
-                    goLogin();
+                    goLogin(ctx);
                 } else {
                     Object data = JSON.parseObject(result, resultClass);
                     baseCallBack.onSuccess(data);
@@ -70,14 +65,8 @@ public class BaseClient {
 
     /**
      * 发送post请求
-     *
-     * @param url
-     * @param map
-     * @param resultClass
-     * @param baseCallBack
-     * @return
      */
-    public static Callback.Cancelable post(String url, Map<String, Object> map, final Class<?> resultClass, final BaseCallBack baseCallBack) {
+    public static Callback.Cancelable post(final Context ctx, String url, Map<String, Object> map, final Class<?> resultClass, final BaseCallBack baseCallBack) {
         RequestParams params = new RequestParams(url);
         if (map != null) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -91,7 +80,7 @@ public class BaseClient {
                 BaseBean baseBean = JSON.parseObject(result, BaseBean.class);
 
                 if (baseBean.getResult() == -1) {  //token过期
-                    goLogin();
+                    goLogin(ctx);
                 } else {
                     Object data = JSON.parseObject(result, resultClass);
                     baseCallBack.onSuccess(data);
@@ -118,17 +107,17 @@ public class BaseClient {
     /**
      * 去登陆
      */
-    private static void goLogin() {
-        Toast.makeText(x.app(), "登陆过期,请重新登陆", Toast.LENGTH_SHORT).show();
-        PreferencesUtils.removeString(x.app(), "token");
-        Intent i = new Intent(x.app(), LoginActivity.class);
-        x.app().startActivity(i);
+    private static void goLogin(Context ctx) {
+        Toast.makeText(ctx, "登陆过期,请重新登陆", Toast.LENGTH_SHORT).show();
+        PreferencesUtils.removeString(ctx, "token");
+        Intent i = new Intent(ctx, LoginActivity.class);
+        ctx.startActivity(i);
     }
 
     /**
      * 续期token
      */
-    private static <T> void refreshToken(String url, Map<String, Object> map, final Class<T> beanClass, final BaseCallBack baseCallBack) {
+    private static void refreshToken(String url, Map<String, Object> map, final Class<?> beanClass, final BaseCallBack baseCallBack) {
         String phone = PreferencesUtils.getString(x.app(), "phone", "");
     }
 
