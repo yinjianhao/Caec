@@ -1,6 +1,10 @@
 package com.me.caec.globle;
 
+import android.content.Intent;
+import android.widget.Toast;
+
 import com.alibaba.fastjson.JSON;
+import com.me.caec.activity.LoginActivity;
 import com.me.caec.bean.BaseBean;
 import com.me.caec.utils.PreferencesUtils;
 
@@ -8,6 +12,7 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,12 +26,11 @@ public class BaseClient {
      *
      * @param url
      * @param map
-     * @param beanClass
+     * @param resultClass
      * @param baseCallBack
-     * @param <T>
      * @return
      */
-    public static <T> Callback.Cancelable get(String url, Map<String, String> map, final Class<T> beanClass, final BaseCallBack baseCallBack) {
+    public static Callback.Cancelable get(String url, Map<String, String> map, final Class<?> resultClass, final BaseCallBack baseCallBack) {
         RequestParams params = new RequestParams(url);
         if (map != null) {
             for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -40,9 +44,9 @@ public class BaseClient {
                 BaseBean baseBean = JSON.parseObject(result, BaseBean.class);
 
                 if (baseBean.getResult() == -1) {  //token过期
-
+                    goLogin();
                 } else {
-                    Object data = JSON.parseObject(result, beanClass);
+                    Object data = JSON.parseObject(result, resultClass);
                     baseCallBack.onSuccess(data);
                 }
             }
@@ -69,12 +73,11 @@ public class BaseClient {
      *
      * @param url
      * @param map
-     * @param beanClass
+     * @param resultClass
      * @param baseCallBack
-     * @param <T>
      * @return
      */
-    public static <T> Callback.Cancelable post(String url, Map<String, Object> map, final Class<T> beanClass, final BaseCallBack baseCallBack) {
+    public static Callback.Cancelable post(String url, Map<String, Object> map, final Class<?> resultClass, final BaseCallBack baseCallBack) {
         RequestParams params = new RequestParams(url);
         if (map != null) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -88,9 +91,9 @@ public class BaseClient {
                 BaseBean baseBean = JSON.parseObject(result, BaseBean.class);
 
                 if (baseBean.getResult() == -1) {  //token过期
-
+                    goLogin();
                 } else {
-                    Object data = JSON.parseObject(result, beanClass);
+                    Object data = JSON.parseObject(result, resultClass);
                     baseCallBack.onSuccess(data);
                 }
             }
@@ -113,14 +116,25 @@ public class BaseClient {
     }
 
     /**
+     * 去登陆
+     */
+    private static void goLogin() {
+        Toast.makeText(x.app(), "登陆过期,请重新登陆", Toast.LENGTH_SHORT).show();
+        PreferencesUtils.removeString(x.app(), "token");
+        Intent i = new Intent(x.app(), LoginActivity.class);
+        x.app().startActivity(i);
+    }
+
+    /**
      * 续期token
      */
     private static <T> void refreshToken(String url, Map<String, Object> map, final Class<T> beanClass, final BaseCallBack baseCallBack) {
         String phone = PreferencesUtils.getString(x.app(), "phone", "");
-
-//        post(RequestUrl.REFRESH_TOKEN_URL)
     }
 
+    /**
+     * 回调
+     */
     public interface BaseCallBack {
 
         void onSuccess(Object result);

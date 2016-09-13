@@ -12,8 +12,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.me.caec.R;
+import com.me.caec.bean.UploadImage;
+import com.me.caec.bean.UserInfo;
+import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.ImageUtils;
 import com.me.caec.utils.PreferencesUtils;
@@ -24,8 +28,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
+import org.xutils.image.ImageOptions;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -83,31 +91,31 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void getUserInfo() {
-        String token = PreferencesUtils.getString(this, "token", "");
-        RequestParams params = new RequestParams(RequestUrl.USER_INFO_URL);
-        params.addQueryStringParameter("token", token);
 
-        Callback.Cancelable cancelable = x.http().get(params, new Callback.CommonCallback<String>() {
+        Map<String, String> map = new HashMap<>();
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
+
+        BaseClient.get(RequestUrl.USER_INFO_URL, map, UserInfo.class, new BaseClient.BaseCallBack() {
             @Override
-            public void onSuccess(String string) {
-                try {
-                    JSONObject jsonObject = new JSONObject(string);
-                    if (jsonObject.getInt("result") == 0) {
-                        JSONObject data = jsonObject.getJSONObject("data");
-                        PreferencesUtils.setInt(UserInfoActivity.this, "sex", data.getInt("sex"));
-                        PreferencesUtils.setString(UserInfoActivity.this, "birthday", data.getString("birthday"));
-                        PreferencesUtils.setString(UserInfoActivity.this, "phone", data.getString("mobile"));
-                        PreferencesUtils.setString(UserInfoActivity.this, "nickName", data.getString("nickName"));
-                        PreferencesUtils.setString(UserInfoActivity.this, "headImgUrl", data.getString("img"));
+            public void onSuccess(Object result) {
+                UserInfo data = (UserInfo) result;
+                if (data.getResult() == 0) {
+                    UserInfo.DataBean dataBean = data.getData();
+                    PreferencesUtils.setInt(UserInfoActivity.this, "sex", dataBean.getSex());
+                    PreferencesUtils.setString(UserInfoActivity.this, "birthday", dataBean.getBirthday());
+                    PreferencesUtils.setString(UserInfoActivity.this, "phone", dataBean.getMobile());
+                    PreferencesUtils.setString(UserInfoActivity.this, "nickName", dataBean.getNickName());
+                    PreferencesUtils.setString(UserInfoActivity.this, "headImgUrl", dataBean.getImg());
 
-                        x.image().bind(ivHead, data.getString("img"));
-                        tvNAme.setText(data.getString("nickName"));
-                        tvPhone.setText(data.getString("mobile"));
-                        tvSex.setText(data.getInt("sex") == 1 ? "男" : "女");
-                        tvBirthday.setText(data.getString("birthday"));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    ImageOptions.Builder builder = new ImageOptions.Builder();
+                    builder.setCircular(true);
+                    ImageOptions op = builder.build();
+
+                    x.image().bind(ivHead, dataBean.getImg(), op);
+                    tvNAme.setText(dataBean.getNickName());
+                    tvPhone.setText(dataBean.getMobile());
+                    tvSex.setText(dataBean.getSex() == 1 ? "男" : "女");
+                    tvBirthday.setText(dataBean.getBirthday());
                 }
             }
 
@@ -117,7 +125,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
+            public void onCancelled(Callback.CancelledException cex) {
 
             }
 
@@ -176,6 +184,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.TOP, 0, 0);
     }
 
+    /**
+     * 注销
+     */
     private void loginOut() {
         ConfirmDialog dialog = new ConfirmDialog(UserInfoActivity.this);
         dialog.setBody("是否退出登录?");
@@ -184,7 +195,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             public void confirm() {
                 PreferencesUtils.removeInt(UserInfoActivity.this, "sex");
                 PreferencesUtils.removeString(UserInfoActivity.this, "birthday");
-                PreferencesUtils.removeString(UserInfoActivity.this, "phone");
+//                PreferencesUtils.removeString(UserInfoActivity.this, "phone");
                 PreferencesUtils.removeString(UserInfoActivity.this, "nickName");
                 PreferencesUtils.removeString(UserInfoActivity.this, "headImgUrl");
                 PreferencesUtils.removeString(UserInfoActivity.this, "token");
@@ -240,32 +251,33 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private void uploadImg(final Bitmap bitmap) {
         String base64 = ImageUtils.Bitmap2Base64(bitmap);
 
-        RequestParams params = new RequestParams(RequestUrl.UPLOAD_IMAGE_URL);
-        params.addQueryStringParameter("biz", "0");
-        params.addQueryStringParameter("file", base64);
-        params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
+        Map<String, Object> map = new HashMap<>();
+        map.put("biz", "0");
+        map.put("file", base64);
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
 
-        x.http().post(params, new Callback.CommonCallback<String>() {
+        BaseClient.post(RequestUrl.UPLOAD_IMAGE_URL, map, UploadImage.class, new BaseClient.BaseCallBack() {
             @Override
-            public void onSuccess(String result) {
-                try {
-                    JSONObject jsonObject = new JSONObject(result);
-                    if (jsonObject.getInt("result") == 0) {
-                        Log.d("upload", jsonObject.getJSONObject("data").getString("url"));
-                        ivHead.setImageBitmap(bitmap);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            public void onSuccess(Object result) {
+                UploadImage data = (UploadImage) result;
+                if (data.getResult() == 0) {
+                    ImageOptions.Builder builder = new ImageOptions.Builder();
+                    builder.setCircular(true);
+                    ImageOptions op = builder.build();
+
+                    x.image().bind(ivHead, data.getData().getUrl(), op);
+                } else {
+                    Toast.makeText(UserInfoActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                ex.printStackTrace();
+                Toast.makeText(UserInfoActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
+            public void onCancelled(Callback.CancelledException cex) {
 
             }
 

@@ -18,6 +18,9 @@ public class RequestUrl {
     //登录
     public static final String LOGIN_URL = SERVICE_URL + "/main/user/login";
 
+    //获取公钥
+    public static final String PUBILIC_KEY_URL = SERVICE_URL + "/main/user/generatePublicKey";
+
     //续期token
     public static final String REFRESH_TOKEN_URL = SERVICE_URL + "/main/user/relogin";
 

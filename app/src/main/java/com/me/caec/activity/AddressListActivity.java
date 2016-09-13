@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.bean.AddressList;
+import com.me.caec.bean.BaseBean;
 import com.me.caec.bean.Location;
 import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
@@ -100,38 +101,6 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
     private void getAddressList() {
         RequestParams params = new RequestParams(RequestUrl.ADDRESS_LIST_URL);
         params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
-
-//        Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<AddressList>() {
-//            @Override
-//            public void onSuccess(AddressList result) {
-//                if (result.getResult() == 0) {
-//                    addressList = result.getData();
-//                    if (adapter == null) {
-//                        adapter = new Adapter();
-//                        lvAddress.setAdapter(adapter);
-//                    } else {
-//                        adapter.notifyDataSetChanged();
-//                    }
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onError(Throwable ex, boolean isOnCallback) {
-//                Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onCancelled(CancelledException cex) {
-//
-//            }
-//
-//            @Override
-//            public void onFinished() {
-//
-//            }
-//        });
 
         Map<String, Object> map = new HashMap<>();
         map.put("token", PreferencesUtils.getString(this, "token", ""));
@@ -287,25 +256,22 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
         }
 
         private void onCheckBoxClick(final int position) {
-            RequestParams params = new RequestParams(RequestUrl.SET_DEFAULT_ADDRESS_URL);
-            params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
-            params.addQueryStringParameter("id", addressList.get(position).getId());
 
-            Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
+            map.put("id", addressList.get(position).getId());
+
+            BaseClient.post(RequestUrl.SET_DEFAULT_ADDRESS_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
                 @Override
-                public void onSuccess(String string) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(string);
-                        int result = jsonObject.getInt("result");
-                        if (result == 0) {
-                            addressList.get(currentDefault).setIsDeafault(false);
-                            addressList.get(position).setIsDeafault(true);
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "设置失败,请稍后重试", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                public void onSuccess(Object result) {
+                    BaseBean data = (BaseBean) result;
+
+                    if (data.getResult() == 0) {
+                        addressList.get(currentDefault).setIsDeafault(false);
+                        addressList.get(position).setIsDeafault(true);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "设置失败,请稍后重试", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -315,7 +281,7 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                 }
 
                 @Override
-                public void onCancelled(CancelledException cex) {
+                public void onCancelled(Callback.CancelledException cex) {
 
                 }
 
@@ -344,39 +310,35 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void confirm() {
                     //发起请求
-                    RequestParams params = new RequestParams(RequestUrl.DELETE_ADDRESS_URL);
-                    params.addQueryStringParameter("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
-                    params.addQueryStringParameter("id", addressList.get(position).getId());
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("token", PreferencesUtils.getString(getApplicationContext(), "token", ""));
+                    map.put("id", addressList.get(position).getId());
 
-                    Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
+                    BaseClient.post(RequestUrl.DELETE_ADDRESS_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
                         @Override
-                        public void onSuccess(String string) {
-                            try {
-                                JSONObject jsonObject = new JSONObject(string);
-                                int result = jsonObject.getInt("result");
-                                if (result == 0) {
-                                    Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
-                                    if (addressList.get(position).isIsDeafault()) {
-                                        getAddressList();
-                                    } else {
-                                        addressList.remove(position);
-                                        adapter.notifyDataSetChanged();
-                                    }
+                        public void onSuccess(Object result) {
+                            BaseBean data = (BaseBean) result;
+
+                            if (data.getResult() == 0) {
+                                Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+                                if (addressList.get(position).isIsDeafault()) {
+                                    getAddressList();
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "删除失败,请稍后重试", Toast.LENGTH_SHORT).show();
+                                    addressList.remove(position);
+                                    adapter.notifyDataSetChanged();
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "删除失败,请稍后重试", Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onError(Throwable ex, boolean isOnCallback) {
-                            Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+
                         }
 
                         @Override
-                        public void onCancelled(CancelledException cex) {
+                        public void onCancelled(Callback.CancelledException cex) {
 
                         }
 

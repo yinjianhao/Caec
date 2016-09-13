@@ -4,14 +4,20 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
+import com.me.caec.bean.Login;
+import com.me.caec.bean.RSA;
+import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
+import com.me.caec.utils.Base64Utils;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.utils.RSAUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,9 +27,14 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 登录页面
  * 1.缺少多次错误验证码
+ * 2.缺少登录加密
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -49,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initView() {
         tvTitle.setText("登录");
+        etPhone.setText(PreferencesUtils.getString(this, "phone", ""));
     }
 
     //登录
@@ -82,41 +94,40 @@ public class LoginActivity extends AppCompatActivity {
      * @param phone 手机号
      * @param psd   密码
      */
-    private void login(String phone, String psd) {
-        RequestParams params = new RequestParams(RequestUrl.LOGIN_URL);
-        params.addQueryStringParameter("mobile", phone);
-        params.addQueryStringParameter("password", psd);
 
-        Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
+    private void login(final String phone, String psd) {
+
+        //发起登录请求
+        Map<String, Object> params = new HashMap<>();
+        params.put("mobile", phone);
+        params.put("password", psd);
+
+        BaseClient.post(RequestUrl.LOGIN_URL, params, Login.class, new BaseClient.BaseCallBack() {
             @Override
-            public void onSuccess(String string) {
-                try {
-                    JSONObject jsonObject = new JSONObject(string);
-                    if (jsonObject.getInt("result") == 0) {
-                        JSONObject data = jsonObject.getJSONObject("data");
+            public void onSuccess(Object result) {
+                Login loginData = (Login) result;
 
-                        //保存用户信息
-                        PreferencesUtils.setString(LoginActivity.this, "token", data.getString("token"));
-                        PreferencesUtils.setString(LoginActivity.this, "phone", data.getString("mobile"));
-                        PreferencesUtils.setString(LoginActivity.this, "nickName", data.getString("nickname"));
-                        PreferencesUtils.setString(LoginActivity.this, "headImgUrl", data.getString("img"));
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (loginData.getResult() == 0) {
+                    Login.DataBean dataBean = loginData.getData();
+
+                    //保存用户信息
+                    PreferencesUtils.setString(LoginActivity.this, "token", dataBean.getToken());
+                    PreferencesUtils.setString(LoginActivity.this, "phone", dataBean.getMobile());
+                    PreferencesUtils.setString(LoginActivity.this, "nickName", dataBean.getNickname());
+                    PreferencesUtils.setString(LoginActivity.this, "headImgUrl", dataBean.getImg());
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Log.d(TAG, ex.toString());
                 Toast.makeText(LoginActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
+            public void onCancelled(Callback.CancelledException cex) {
 
             }
 
@@ -126,6 +137,80 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+//    private void login(final String phone, final String psd) {
+//
+//        //获取公钥加密
+//        BaseClient.get(RequestUrl.PUBILIC_KEY_URL, null, RSA.class, new BaseClient.BaseCallBack() {
+//            @Override
+//            public void onSuccess(Object result) {
+//                RSA data = (RSA) result;
+//                try {
+//                    final String encodePsd = RSAUtils.encodeByModAndExp(psd, data.getData().getMod(), data.getData().getExp());
+//
+//                    //发起登录请求
+//                    Map<String, Object> params = new HashMap<>();
+//                    params.put("mobile", phone);
+//                    params.put("password", encodePsd);
+//                    params.put("mod", data.getData().getMod());
+//                    BaseClient.post(RequestUrl.LOGIN_URL, params, Login.class, new BaseClient.BaseCallBack() {
+//                        @Override
+//                        public void onSuccess(Object result) {
+//                            Login loginData = (Login) result;
+//
+//                            if (loginData.getResult() == 0) {
+//                                Login.DataBean dataBean = loginData.getData();
+//
+//                                //保存用户信息
+//                                PreferencesUtils.setString(LoginActivity.this, "psd", encodePsd);
+//                                PreferencesUtils.setString(LoginActivity.this, "modulus", dataBean.getMod());
+//                                PreferencesUtils.setString(LoginActivity.this, "token", dataBean.getToken());
+//                                PreferencesUtils.setString(LoginActivity.this, "phone", dataBean.getMobile());
+//                                PreferencesUtils.setString(LoginActivity.this, "nickName", dataBean.getNickname());
+//                                PreferencesUtils.setString(LoginActivity.this, "headImgUrl", dataBean.getImg());
+//                                finish();
+//                            } else {
+//                                Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onError(Throwable ex, boolean isOnCallback) {
+//                            Toast.makeText(LoginActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(Callback.CancelledException cex) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onFinished() {
+//
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onError(Throwable ex, boolean isOnCallback) {
+//                Toast.makeText(LoginActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCancelled(Callback.CancelledException cex) {
+//
+//            }
+//
+//            @Override
+//            public void onFinished() {
+//
+//            }
+//        });
+//    }
+
 
     @Event(R.id.tv_register)
     private void onRegisterClick(View view) {

@@ -15,47 +15,6 @@ import org.xutils.x;
  */
 public class ClientUtils {
 
-    public static <T> void baseHttp(RequestParams params, final Class<T> clazz, BaseHttpListener listener) {
-
-        Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String string) {
-                T t = JSON.parseObject(string, clazz);
-                ((Location) t).getResult();
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
-    }
-
-    /**
-     * baseHttp回调接口
-     */
-    public interface BaseHttpListener {
-        void getResult(int result, String data);
-
-        void onSuccess(String data);
-
-        void onError(Throwable ex, boolean isOnCallback);
-
-        void onCancelled(Callback.CancelledException cex);
-
-        void onFinished();
-    }
-
     /**
      * 判断是否登录
      *
@@ -66,4 +25,6 @@ public class ClientUtils {
         String token = PreferencesUtils.getString(ctx, "token", "");
         return !token.isEmpty();
     }
+
+
 }
