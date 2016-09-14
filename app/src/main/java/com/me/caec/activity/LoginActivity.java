@@ -10,9 +10,11 @@ import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.bean.Login;
+import com.me.caec.bean.RSA;
 import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.PreferencesUtils;
+import com.me.caec.utils.RSAUtils;
 
 import org.xutils.common.Callback;
 import org.xutils.view.annotation.Event;
@@ -133,61 +135,56 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
 //    private void login(final String phone, final String psd) {
-//
 //        //获取公钥加密
 //        BaseClient.get(this, RequestUrl.PUBILIC_KEY_URL, null, RSA.class, new BaseClient.BaseCallBack() {
 //            @Override
 //            public void onSuccess(Object result) {
 //                RSA data = (RSA) result;
-//                try {
-//                    final String encodePsd = RSAUtils.encodeByModAndExp(psd, data.getData().getMod(), data.getData().getExp());
 //
-//                    //发起登录请求
-//                    Map<String, Object> params = new HashMap<>();
-//                    params.put("mobile", phone);
-//                    params.put("password", encodePsd);
-//                    params.put("mod", data.getData().getMod());
-//                    BaseClient.post(RequestUrl.LOGIN_URL, params, Login.class, new BaseClient.BaseCallBack() {
-//                        @Override
-//                        public void onSuccess(Object result) {
-//                            Login loginData = (Login) result;
+//                final String encodePsd = RSAUtils.encodeByModAndExp(psd, data.getData().getMod(), data.getData().getExp());
 //
-//                            if (loginData.getResult() == 0) {
-//                                Login.DataBean dataBean = loginData.getData();
+//                //发起登录请求
+//                Map<String, Object> params = new HashMap<>();
+//                params.put("mobile", phone);
+//                params.put("password", encodePsd);
+//                params.put("mod", data.getData().getMod());
+//                BaseClient.post(LoginActivity.this, RequestUrl.LOGIN_ENCODE_URL, params, Login.class, new BaseClient.BaseCallBack() {
+//                    @Override
+//                    public void onSuccess(Object result) {
+//                        Login loginData = (Login) result;
 //
-//                                //保存用户信息
-//                                PreferencesUtils.setString(LoginActivity.this, "psd", encodePsd);
-//                                PreferencesUtils.setString(LoginActivity.this, "modulus", dataBean.getMod());
-//                                PreferencesUtils.setString(LoginActivity.this, "token", dataBean.getToken());
-//                                PreferencesUtils.setString(LoginActivity.this, "phone", dataBean.getMobile());
-//                                PreferencesUtils.setString(LoginActivity.this, "nickName", dataBean.getNickname());
-//                                PreferencesUtils.setString(LoginActivity.this, "headImgUrl", dataBean.getImg());
-//                                finish();
-//                            } else {
-//                                Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
-//                            }
+//                        if (loginData.getResult() == 0) {
+//                            Login.DataBean dataBean = loginData.getData();
+//
+//                            //保存用户信息
+//                            PreferencesUtils.setString(LoginActivity.this, "psd", encodePsd);
+//                            PreferencesUtils.setString(LoginActivity.this, "modulus", dataBean.getMod());
+//                            PreferencesUtils.setString(LoginActivity.this, "token", dataBean.getToken());
+//                            PreferencesUtils.setString(LoginActivity.this, "phone", dataBean.getMobile());
+//                            PreferencesUtils.setString(LoginActivity.this, "nickName", dataBean.getNickname());
+//                            PreferencesUtils.setString(LoginActivity.this, "headImgUrl", dataBean.getImg());
+//                            finish();
+//                        } else {
+//                            Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
 //                        }
+//                    }
 //
-//                        @Override
-//                        public void onError(Throwable ex, boolean isOnCallback) {
-//                            Toast.makeText(LoginActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
-//                        }
+//                    @Override
+//                    public void onError(Throwable ex, boolean isOnCallback) {
+//                        Toast.makeText(LoginActivity.this, "数据获取失败,请稍候再试", Toast.LENGTH_SHORT).show();
+//                    }
 //
-//                        @Override
-//                        public void onCancelled(Callback.CancelledException cex) {
+//                    @Override
+//                    public void onCancelled(Callback.CancelledException cex) {
 //
-//                        }
+//                    }
 //
-//                        @Override
-//                        public void onFinished() {
+//                    @Override
+//                    public void onFinished() {
 //
-//                        }
-//                    });
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
+//                    }
+//                });
 //            }
 //
 //            @Override

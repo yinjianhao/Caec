@@ -1,15 +1,21 @@
 package com.me.caec.activity;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import com.me.caec.R;
 
-public class CartActivity extends AppCompatActivity {
+public class CartActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void initContentView() {
         setContentView(R.layout.activity_cart);
+    }
+
+    @Override
+    public void render() {
+
+    }
+
+    @Override
+    public void onShow() {
+
     }
 }

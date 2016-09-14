@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.activity.AddressListActivity;
+import com.me.caec.activity.CartActivity;
 import com.me.caec.activity.LoginActivity;
 import com.me.caec.activity.OrderListActivity;
 import com.me.caec.activity.UserInfoActivity;
@@ -270,5 +271,6 @@ public class MyFragment extends BaseFragment {
     @Event(R.id.tv_about)
     private void onAboutClick(View view) {
         Toast.makeText(getActivity(), "关于", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(getActivity(), CartActivity.class));
     }
 }

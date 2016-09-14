@@ -3,6 +3,7 @@ package com.me.caec.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import org.xutils.x;
@@ -16,13 +17,17 @@ import org.xutils.x;
 public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initContentView();
+
         x.view().inject(this);
 
         render();
         onShow();
     }
+
+    public abstract void initContentView();
 
     /**
      * 初始化页面(只调用一次)

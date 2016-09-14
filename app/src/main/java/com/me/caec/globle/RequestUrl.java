@@ -2,12 +2,12 @@ package com.me.caec.globle;
 
 /**
  * 请求地址
- * <p/>
+ * <p>
  * Created by yin on 2016/8/30.
  */
 public class RequestUrl {
     //服务器根地址
-    public static final String SERVICE_URL = "http://61.186.243.111";
+    public static final String SERVICE_URL = "http://ssl.mall.changan.com.cn";
 
     //图片上传
     public static final String UPLOAD_IMAGE_URL = SERVICE_URL + "/member/attachment/base64/upload";
@@ -17,6 +17,9 @@ public class RequestUrl {
 
     //登录
     public static final String LOGIN_URL = SERVICE_URL + "/main/user/login";
+
+    //登录加密
+    public static final String LOGIN_ENCODE_URL = SERVICE_URL + "/main/user/loginEncrypt";
 
     //获取公钥
     public static final String PUBILIC_KEY_URL = SERVICE_URL + "/main/user/generatePublicKey";

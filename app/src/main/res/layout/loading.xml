@@ -3,18 +3,20 @@
     android:id="@+id/loading"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
     android:background="@drawable/bg_loading"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="51dp"
+        android:id="@+id/iv_load"
+        android:layout_width="53dp"
         android:layout_height="22dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/loading" />
+        android:layout_marginTop="20dp" />
 
     <TextView
+        android:id="@+id/tv_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="正在加载"
