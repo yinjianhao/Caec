@@ -32,8 +32,8 @@
             android:background="@drawable/background_white"
             android:gravity="top"
             android:hint="快写下对商品的感受吧！"
-            android:lines="2"
             android:maxLength="200"
+            android:minHeight="45dp"
             android:textSize="13sp" />
     </LinearLayout>
 

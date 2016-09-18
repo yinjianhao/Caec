@@ -11,7 +11,7 @@ public class CartList {
 
 
     private int total;
-    private String result;
+    private int result;
     private List<DataBean> data;
 
     public int getTotal() {
@@ -22,11 +22,11 @@ public class CartList {
         this.total = total;
     }
 
-    public String getResult() {
+    public int getResult() {
         return result;
     }
 
-    public void setResult(String result) {
+    public void setResult(int result) {
         this.result = result;
     }
 
@@ -51,8 +51,8 @@ public class CartList {
         private String id;
         private int pId;
         private int stock;
-        private int price;
-        private double originalPrice;
+        private float price;
+        private float originalPrice;
         private String cartItemId;
         private String name;
         private String storeId;
@@ -155,19 +155,19 @@ public class CartList {
             this.stock = stock;
         }
 
-        public int getPrice() {
+        public float getPrice() {
             return price;
         }
 
-        public void setPrice(int price) {
+        public void setPrice(float price) {
             this.price = price;
         }
 
-        public double getOriginalPrice() {
+        public float getOriginalPrice() {
             return originalPrice;
         }
 
-        public void setOriginalPrice(double originalPrice) {
+        public void setOriginalPrice(float originalPrice) {
             this.originalPrice = originalPrice;
         }
 

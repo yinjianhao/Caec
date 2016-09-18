@@ -7,7 +7,7 @@ package com.me.caec.globle;
  */
 public class RequestUrl {
     //服务器根地址
-    public static final String SERVICE_URL = "http://ssl.mall.changan.com.cn";
+    public static final String SERVICE_URL = "http://172.26.1.79";
 
     //图片上传
     public static final String UPLOAD_IMAGE_URL = SERVICE_URL + "/member/attachment/base64/upload";

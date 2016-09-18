@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp">
+
+    <RelativeLayout
+        android:id="@+id/rl_check"
+        android:layout_width="38dp"
+        android:layout_height="95dp">
+
+        <CheckBox
+            android:id="@+id/cb_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_good"
+        android:layout_width="95dp"
+        android:layout_height="95dp"
+        android:layout_toEndOf="@+id/rl_check"
+        android:layout_toRightOf="@+id/rl_check"
+        android:background="@drawable/border_image"
+        android:src="@drawable/placeholder_200_200" />
+
+    <TextView
+        android:id="@+id/tv_good"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/iv_good"
+        android:layout_toRightOf="@+id/iv_good"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="车模-CS15"
+        android:textColor="@color/color333"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tv_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_good"
+        android:layout_alignStart="@+id/tv_good"
+        android:layout_below="@+id/tv_good"
+        android:layout_marginTop="3dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="车模-CS15"
+        android:textColor="@color/color999"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tv_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_good"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/tv_good"
+        android:text="¥200"
+        android:textColor="@color/baseRed" />
+
+    <TextView
+        android:id="@+id/tv_originalPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_toEndOf="@+id/tv_price"
+        android:layout_toRightOf="@+id/tv_price"
+        android:text="¥200"
+        android:textColor="@color/color999" />
+
+    <LinearLayout
+        android:layout_width="75dp"
+        android:layout_height="25dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/border_line"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_plus"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/border_line_right"
+            android:enabled="false"
+            android:gravity="center"
+            android:text="-"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_num"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_add"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/border_line_left"
+            android:gravity="center"
+            android:text="+"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

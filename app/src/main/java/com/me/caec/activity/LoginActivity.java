@@ -53,7 +53,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initView() {
         tvTitle.setText("登录");
-        etPhone.setText(PreferencesUtils.getString(this, "phone", ""));
+        String phone = PreferencesUtils.getString(this, "phone", "");
+        if (!phone.equals("")) {
+            etPhone.setText(phone);
+            etPhone.setSelection(phone.length());
+        }
     }
 
     //登录

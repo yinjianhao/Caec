@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dp"
+    android:layout_height="wrap_content"
+    android:background="#fff"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="修改购买数量"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_plus"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/border_line"
+            android:enabled="false"
+            android:gravity="center"
+            android:text="-"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/tv_num"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/border_line_top_button"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_add"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/border_line"
+            android:gravity="center"
+            android:text="+"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_background_press_gray"
+            android:text="取消"
+            android:textColor="#0000ff"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="#000" />
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_background_press_gray"
+            android:text="确定"
+            android:textColor="#0000ff"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>

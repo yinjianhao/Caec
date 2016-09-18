@@ -14,7 +14,9 @@ import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.bean.AddressList;
+import com.me.caec.bean.BaseBean;
 import com.me.caec.bean.Location;
+import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.LocationUtils;
 import com.me.caec.utils.PreferencesUtils;
@@ -26,7 +28,9 @@ import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 创建或修改地址
@@ -245,7 +249,7 @@ public class CreateAddressActivity extends AppCompatActivity implements View.OnC
      * 发起请求，提交信息
      */
     private void confirm() {
-        String receiver = etReceiver.getText().toString();
+        final String receiver = etReceiver.getText().toString();
         String mobile = etPhone.getText().toString();
         String zip = etZip.getText().toString();
         String address = etAddress.getText().toString();
@@ -256,33 +260,31 @@ public class CreateAddressActivity extends AppCompatActivity implements View.OnC
         }
 
         //发起请求
-        RequestParams params = new RequestParams(type == FLAG_ADDRESS_CREATE ? RequestUrl.CREATE_ADDRESS_URL : RequestUrl.EDIT_ADDRESS_URL);
+        Map<String, Object> map = new HashMap<>();
+        String url = RequestUrl.CREATE_ADDRESS_URL;
         if (type == FLAG_ADDRESS_EDIT) {
-            params.addBodyParameter("id", dataBean.getId());
+            map.put("id", dataBean.getId());
+            url = RequestUrl.EDIT_ADDRESS_URL;
         }
-        params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
-        params.addQueryStringParameter("receiver", receiver);
-        params.addQueryStringParameter("mobile", mobile);
-        params.addQueryStringParameter("zip", zip);
-        params.addQueryStringParameter("address", address);
-        params.addQueryStringParameter("provinceId", String.valueOf(provinceId));
-        params.addQueryStringParameter("cityId", String.valueOf(cityId));
-        params.addQueryStringParameter("areaId", String.valueOf(areaId));
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
+        map.put("receiver", receiver);
+        map.put("mobile", mobile);
+        map.put("zip", zip);
+        map.put("address", address);
+        map.put("provinceId", String.valueOf(provinceId));
+        map.put("cityId", String.valueOf(cityId));
+        map.put("areaId", String.valueOf(areaId));
 
-        Callback.Cancelable cancelable = x.http().post(params, new Callback.CommonCallback<String>() {
+        BaseClient.post(this, url, map, BaseBean.class, new BaseClient.BaseCallBack() {
             @Override
-            public void onSuccess(String string) {
-                try {
-                    JSONObject jsonObject = new JSONObject(string);
-                    int result = jsonObject.getInt("result");
-                    if (result == 0) {
-                        Toast.makeText(getApplicationContext(), "保存地址成功", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "保存地址失败", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            public void onSuccess(Object result) {
+                BaseBean data = (BaseBean) result;
+
+                if (data.getResult() == 0) {
+                    Toast.makeText(getApplicationContext(), "保存地址成功", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "保存地址失败", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -292,7 +294,7 @@ public class CreateAddressActivity extends AppCompatActivity implements View.OnC
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
+            public void onCancelled(Callback.CancelledException cex) {
 
             }
 

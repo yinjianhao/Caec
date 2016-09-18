@@ -19,7 +19,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
+import com.me.caec.bean.BaseBean;
 import com.me.caec.bean.CommentList;
+import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.PreferencesUtils;
 
@@ -30,7 +32,9 @@ import org.xutils.image.ImageOptions;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 评论页面
@@ -92,14 +96,16 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
      * 获取商品评论信息
      */
     private void getCommentDetail() {
-        RequestParams params = new RequestParams(RequestUrl.COMMENT_LIST_URL);
-        params.addBodyParameter("token", PreferencesUtils.getString(this, "token", ""));
-        params.addBodyParameter("orderId", orderId);
 
-        x.http().get(params, new Callback.CommonCallback<String>() {
+        Map<String, String> map = new HashMap<>();
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
+        map.put("orderId", orderId);
+
+        BaseClient.get(this, RequestUrl.COMMENT_LIST_URL, map, CommentList.class, new BaseClient.BaseCallBack() {
             @Override
-            public void onSuccess(String result) {
-                CommentList list = JSON.parseObject(result, CommentList.class);
+            public void onSuccess(Object result) {
+                CommentList list = (CommentList) result;
+
                 if (list.getResult() == 0) {
                     commentList = list.getData();
                     adapter = new Adapter();
@@ -116,7 +122,7 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
+            public void onCancelled(Callback.CancelledException cex) {
 
             }
 
@@ -170,28 +176,25 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         //发起请求
-        RequestParams params = new RequestParams(RequestUrl.PUBILSH_COMMENT_URL);
-        params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
-        params.addQueryStringParameter("orderId", orderId);
-        params.addQueryStringParameter("goods", jsonArray.toString());
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
+        map.put("orderId", orderId);
+        map.put("goods", jsonArray.toString());
 
-        x.http().post(params, new Callback.CommonCallback<String>() {
+        BaseClient.post(this, RequestUrl.PUBILSH_COMMENT_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
             @Override
-            public void onSuccess(String result) {
-                try {
-                    org.json.JSONObject json = new org.json.JSONObject(result);
-                    if (json.getInt("result") == 0) {
-                        Toast.makeText(CommentActivity.this, "评价成功", Toast.LENGTH_SHORT).show();
+            public void onSuccess(Object result) {
+                BaseBean data = (BaseBean) result;
 
-                        Intent i = new Intent(CommentActivity.this, OrderListActivity.class);
-                        i.putExtra("update", true);
-                        startActivity(i);
-                        finish();
-                    } else {
-                        Toast.makeText(CommentActivity.this, "评价失败", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (data.getResult() == 0) {
+                    Toast.makeText(CommentActivity.this, "评价成功", Toast.LENGTH_SHORT).show();
+
+                    Intent i = new Intent(CommentActivity.this, OrderListActivity.class);
+                    i.putExtra("update", true);
+                    startActivity(i);
+                    finish();
+                } else {
+                    Toast.makeText(CommentActivity.this, "评价失败", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -201,7 +204,7 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
+            public void onCancelled(Callback.CancelledException cex) {
 
             }
 
