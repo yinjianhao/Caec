@@ -531,10 +531,19 @@ public class OrderListPager {
 
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-//                    if (event.getAction() == MotionEvent.ACTION_UP) {
-//                        v.getParent().requestDisallowInterceptTouchEvent(false);
-//                    } else {
-//                        v.getParent().requestDisallowInterceptTouchEvent(true);
+//                    switch (event.getAction()) {
+//                        case MotionEvent.ACTION_DOWN:
+//                            v.getParent().requestDisallowInterceptTouchEvent(true);
+//                            break;
+//                        case MotionEvent.ACTION_MOVE:
+//
+//
+//
+//                            break;
+//                        case MotionEvent.ACTION_UP:
+//                            break;
+//                        default:
+//                            break;
 //                    }
                     return false;
                 }

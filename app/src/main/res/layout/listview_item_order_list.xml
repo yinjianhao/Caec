@@ -64,7 +64,7 @@
     </LinearLayout>
 
     <!--多个商品时-->
-    <HorizontalScrollView
+    <com.me.caec.view.CustomHorizontalScrollView
         android:id="@+id/sv_goods"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
             android:paddingTop="10dp">
 
         </LinearLayout>
-    </HorizontalScrollView>
+    </com.me.caec.view.CustomHorizontalScrollView>
 
     <TextView
         android:id="@+id/line2"
