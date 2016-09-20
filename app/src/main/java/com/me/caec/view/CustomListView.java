@@ -7,30 +7,33 @@ import android.view.MotionEvent;
 import android.widget.ListView;
 
 /**
- * Created by yin on 2016/9/20.
+ * @auther yjh
+ * @date 2016/9/20
  */
 
-public class InterceptListView extends ListView {
+public class CustomListView extends ListView {
 
     private float startX;
     private float startY;
     private float endX;
     private float endY;
 
-    public InterceptListView(Context context) {
+    public CustomListView(Context context) {
         super(context);
     }
 
-    public InterceptListView(Context context, AttributeSet attrs) {
+    public CustomListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public InterceptListView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        Log.d("aaaa", "onInterceptTouchEvent");
+
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 startX = ev.getX();
@@ -39,7 +42,7 @@ public class InterceptListView extends ListView {
                 endX = ev.getX();
                 Log.d("aaaa", "startX - endX --->" + Math.abs(startX - endX));
 
-                if (Math.abs(startX - endX) < 5) {
+                if (Math.abs(startX - endX) == 0) {
                     return true;
                 }
 

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,37 +113,7 @@ public class OrderListPager {
         lvOrderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //判断哪个订单详情
-                OrderList.DataBean dataBean = orderListData.get(position);
-                String status = dataBean.getStatus();
-                Intent i;
-                if (status.equals("01") || status.equals("23")) {
-                    i = new Intent(activity, OrderDetailPayActivity.class);
-                    i.putExtra("orderId", dataBean.getId());
-                    i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
-                } else {
-                    OrderList.DataBean.SubOrdersBean subOrder = dataBean.getSubOrders().get(0);
-                    String subOrderStatus = subOrder.getStatus();
-
-                    if (subOrderStatus.equals("09") || subOrderStatus.equals("11")) {
-                        i = new Intent(activity, OrderDetailCancelActivity.class);
-                        i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
-                    } else {
-                        i = new Intent(activity, OrderDetailNormalActivity.class);
-                        i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
-                        i.putExtra("cancel", view.findViewById(R.id.btn_cancel).getVisibility() == View.VISIBLE);
-                        i.putExtra("cancelMoney", (boolean) view.findViewById(R.id.btn_cancel).getTag());
-                        i.putExtra("confirm", view.findViewById(R.id.btn_confirm).getVisibility() == View.VISIBLE);
-                        i.putExtra("comment", view.findViewById(R.id.btn_comment).getVisibility() == View.VISIBLE);
-                    }
-
-                    i.putExtra("orderId", subOrder.getId());
-
-                    i.putExtra("orderType", subOrder.getType());
-                    i.putExtra("payType", dataBean.getPayType());
-                }
-
-                activity.startActivity(i);
+                goOrderDetail(view, position);
             }
         });
         lvOrderList.setEmptyView(rootView.findViewById(R.id.ll_empty));
@@ -152,6 +123,40 @@ public class OrderListPager {
 
     public View getRootView() {
         return rootView;
+    }
+
+    private void goOrderDetail(View view, int position) {
+        //判断哪个订单详情
+        OrderList.DataBean dataBean = orderListData.get(position);
+        String status = dataBean.getStatus();
+        Intent i;
+        if (status.equals("01") || status.equals("23")) {
+            i = new Intent(activity, OrderDetailPayActivity.class);
+            i.putExtra("orderId", dataBean.getId());
+            i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
+        } else {
+            OrderList.DataBean.SubOrdersBean subOrder = dataBean.getSubOrders().get(0);
+            String subOrderStatus = subOrder.getStatus();
+
+            if (subOrderStatus.equals("09") || subOrderStatus.equals("11")) {
+                i = new Intent(activity, OrderDetailCancelActivity.class);
+                i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
+            } else {
+                i = new Intent(activity, OrderDetailNormalActivity.class);
+                i.putExtra("buyAgain", view.findViewById(R.id.btn_buy_again).getVisibility() == View.VISIBLE);
+                i.putExtra("cancel", view.findViewById(R.id.btn_cancel).getVisibility() == View.VISIBLE);
+                i.putExtra("cancelMoney", (boolean) view.findViewById(R.id.btn_cancel).getTag());
+                i.putExtra("confirm", view.findViewById(R.id.btn_confirm).getVisibility() == View.VISIBLE);
+                i.putExtra("comment", view.findViewById(R.id.btn_comment).getVisibility() == View.VISIBLE);
+            }
+
+            i.putExtra("orderId", subOrder.getId());
+
+            i.putExtra("orderType", subOrder.getType());
+            i.putExtra("payType", dataBean.getPayType());
+        }
+
+        activity.startActivity(i);
     }
 
     /**
@@ -526,28 +531,6 @@ public class OrderListPager {
             btnCancel = (Button) view.findViewById(R.id.btn_cancel);
             btnPay = (Button) view.findViewById(R.id.btn_pay);
             btnConfirm = (Button) view.findViewById(R.id.btn_confirm);
-
-            svGoods.setOnTouchListener(new View.OnTouchListener() {
-
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-//                    switch (event.getAction()) {
-//                        case MotionEvent.ACTION_DOWN:
-//                            v.getParent().requestDisallowInterceptTouchEvent(true);
-//                            break;
-//                        case MotionEvent.ACTION_MOVE:
-//
-//
-//
-//                            break;
-//                        case MotionEvent.ACTION_UP:
-//                            break;
-//                        default:
-//                            break;
-//                    }
-                    return false;
-                }
-            });
 
             //再次购买
             btnBuyAgain.setOnClickListener(new View.OnClickListener() {

@@ -4,13 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--<android.support.v4.widget.SwipeRefreshLayout-->
-    <!--android:id="@+id/srl_order_list"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:paddingTop="10dp">-->
-
-    <com.me.caec.view.InterceptListView
+    <ListView
         android:id="@+id/lv_order_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,8 +12,7 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="10dp">
 
-    </com.me.caec.view.InterceptListView>
-    <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+    </ListView>
 
     <RelativeLayout
         android:id="@+id/ll_empty"

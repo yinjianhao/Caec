@@ -39,8 +39,8 @@ public class CustomHorizontalScrollView extends HorizontalScrollView {
             case MotionEvent.ACTION_MOVE:
                 endX = ev.getX();
 
-                if (Math.abs(startX - endX) >= 5) {
-                    getParent().requestDisallowInterceptTouchEvent(true);
+                if (Math.abs(startX - endX) < 5) {
+                    return false;
                 }
                 break;
             case MotionEvent.ACTION_UP:
