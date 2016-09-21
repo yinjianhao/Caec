@@ -1,5 +1,6 @@
 package com.me.caec.fragment;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +17,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
+import com.me.caec.activity.ConfirmOrderActivity;
 import com.me.caec.bean.BaseBean;
 import com.me.caec.bean.CartList;
 import com.me.caec.globle.BaseClient;
@@ -37,6 +41,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 购物车
@@ -72,6 +77,7 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void initData() {
         tvEdit.setOnClickListener(this);
+        btnSettlement.setOnClickListener(this);
 
         getCartList();
 
@@ -199,9 +205,37 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
             case R.id.tv_edit:
 
                 break;
+            case R.id.btn_settlement:
+                goConfirmOrder();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 去确认订单页面
+     */
+    private void goConfirmOrder() {
+        if (CheckedList.size() == 0) {
+            Toast.makeText(getActivity(), "您还没有选择商品哦!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        for (int position : CheckedList) {
+            CartList.DataBean dataBean = cartList.get(position);
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("id", dataBean.getId());
+            jsonObject.put("count", dataBean.getCount());
+            jsonObject.put("optionalInfo", "[]");
+            jsonArray.add(jsonObject);
+        }
+
+        Intent i = new Intent(getActivity(), ConfirmOrderActivity.class);
+        i.putExtra("params", jsonArray.toString());
+        getActivity().startActivity(i);
     }
 
     private class Adapter extends BaseAdapter {
@@ -245,8 +279,12 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
             viewHolder.tvOriginalPrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG); // 设置中划线并加清晰
             viewHolder.tvOriginalPrice.setTag(position);
 
-            viewHolder.tvPlus.setEnabled(dataBean.getCount() == 1);
-            viewHolder.tvAdd.setEnabled(dataBean.getCount() >= dataBean.getStock());
+            viewHolder.tvPlus.setEnabled(dataBean.getCount() > 1);
+            if (dataBean.getCount() >= dataBean.getStock() || dataBean.getCount() >= 99) {
+                viewHolder.tvAdd.setEnabled(false);
+            } else {
+                viewHolder.tvAdd.setEnabled(true);
+            }
 
             return convertView;
         }
@@ -306,20 +344,47 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
                     int count = dataBean.getCount();
                     int stock = dataBean.getStock();
 
+                    count--;
+                    if (count > stock) {
+                        count = stock;
+                    }
 
+                    dataBean.setCount(count);
+
+                    if (!CheckedList.contains(position)) {
+                        CheckedList.add(position);
+                    }
+                    countPrice();
+                    adapter.notifyDataSetChanged();
                 }
             });
 
             tvNum.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int position = (int) tvOriginalPrice.getTag();
+                    final int position = (int) tvOriginalPrice.getTag();
+                    final CartList.DataBean dataBean = cartList.get(position);
 
-                    int num = Integer.parseInt(tvNum.getText().toString());
+                    final int count = dataBean.getCount();
+                    int stock = dataBean.getStock();
 
-                    Log.d("CartFragment", String.valueOf(position));
+                    CartDialog cartDialog = new CartDialog(getActivity(), count, stock);
+                    cartDialog.setOnOperationListener(new CartDialog.OnOperationListener() {
+                        @Override
+                        public void confirm(int num) {
+                            dataBean.setCount(num);
+                            if (!CheckedList.contains(position)) {
+                                CheckedList.add(position);
+                            }
+                            countPrice();
+                            adapter.notifyDataSetChanged();
+                        }
 
-                    CartDialog cartDialog = new CartDialog(getActivity());
+                        @Override
+                        public void cancel() {
+
+                        }
+                    });
                     cartDialog.show();
                 }
             });
@@ -328,10 +393,18 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
                 @Override
                 public void onClick(View v) {
                     int position = (int) tvOriginalPrice.getTag();
+                    CartList.DataBean dataBean = cartList.get(position);
 
-                    int num = Integer.parseInt(tvNum.getText().toString());
+                    int count = dataBean.getCount();
 
-                    Log.d("CartFragment", String.valueOf(position));
+                    count++;
+                    dataBean.setCount(count);
+
+                    if (!CheckedList.contains(position)) {
+                        CheckedList.add(position);
+                    }
+                    countPrice();
+                    adapter.notifyDataSetChanged();
                 }
             });
         }
@@ -350,6 +423,6 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
         }
 
         btnSettlement.setText("去结算(" + CheckedList.size() + ")");
-        tvPrice.setText(NumberUtils.toFixed2(price));
+        tvPrice.setText("¥" + NumberUtils.toFixed2(price));
     }
 }

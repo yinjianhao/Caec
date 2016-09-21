@@ -36,10 +36,13 @@
             android:name=".activity.OrderListActivity"
             android:launchMode="singleTask" />
         <activity android:name=".activity.CartActivity" />
-        <activity android:name=".activity.CommentActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".activity.CommentActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".activity.OrderDetailPayActivity" />
         <activity android:name=".activity.OrderDetailNormalActivity" />
         <activity android:name=".activity.OrderDetailCancelActivity" />
+        <activity android:name=".activity.ConfirmOrderActivity"></activity>
     </application>
 
 </manifest>

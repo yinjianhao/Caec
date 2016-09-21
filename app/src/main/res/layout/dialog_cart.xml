@@ -27,17 +27,18 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/border_line"
-            android:enabled="false"
             android:gravity="center"
             android:text="-"
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/tv_num"
+            android:id="@+id/et_num"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/border_line_top_button"
             android:gravity="center"
+            android:inputType="number"
+            android:maxLength="2"
             android:text="1"
             android:textSize="16sp" />
 
