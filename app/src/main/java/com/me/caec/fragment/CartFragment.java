@@ -6,9 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +22,7 @@ import com.me.caec.bean.CartList;
 import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.ImageUtils;
+import com.me.caec.utils.NumberUtils;
 import com.me.caec.utils.PreferencesUtils;
 import com.me.caec.view.CartDialog;
 import com.me.caec.view.ConfirmDialog;
@@ -27,6 +32,7 @@ import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -46,10 +52,22 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     @ViewInject(R.id.lv_cart)
     private ListView lvCart;
 
+    @ViewInject(R.id.cb_check_all)
+    private CheckBox cbCheckAll;
+
+    @ViewInject(R.id.tv_price)
+    private TextView tvPrice;
+
+    @ViewInject(R.id.btn_settlement)
+    private Button btnSettlement;
+
     //是否是编辑状态
     private boolean isEdit = false;
     private List<CartList.DataBean> cartList;
     private Adapter adapter;
+
+    //当前选中的
+    private List<Integer> CheckedList = new ArrayList<>();
 
     @Override
     public void initData() {
@@ -75,6 +93,20 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
                 });
                 dialog.show();
                 return false;
+            }
+        });
+
+        cbCheckAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckedList.clear();
+                if (cbCheckAll.isChecked()) {
+                    for (int i = 0, l = adapter.getCount(); i < l; i++) {
+                        CheckedList.add(i);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+                countPrice();
             }
         });
     }
@@ -202,14 +234,19 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
 
             CartList.DataBean dataBean = getItem(position);
 
+            viewHolder.position = position;   //设置当前位置
+            viewHolder.cbCheck.setChecked(CheckedList.contains(position));
             x.image().bind(viewHolder.ivGood, dataBean.getImg(), ImageUtils.getDefaultImageOptions());
             viewHolder.tvGood.setText(dataBean.getName());
             viewHolder.tvDesc.setText(dataBean.getProp());
             viewHolder.tvNum.setText(String.valueOf(dataBean.getCount()));
-            viewHolder.tvPrice.setText("¥" + String.valueOf(dataBean.getPrice()));
-            viewHolder.tvOriginalPrice.setText("¥" + String.valueOf(dataBean.getOriginalPrice()));
+            viewHolder.tvPrice.setText("¥" + NumberUtils.toFixed2(dataBean.getPrice()));
+            viewHolder.tvOriginalPrice.setText("¥" + NumberUtils.toFixed2(dataBean.getOriginalPrice()));
             viewHolder.tvOriginalPrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG); // 设置中划线并加清晰
             viewHolder.tvOriginalPrice.setTag(position);
+
+            viewHolder.tvPlus.setEnabled(dataBean.getCount() == 1);
+            viewHolder.tvAdd.setEnabled(dataBean.getCount() >= dataBean.getStock());
 
             return convertView;
         }
@@ -217,16 +254,22 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
 
     private class ViewHolder {
 
-        public ImageView ivGood;
-        public TextView tvGood;
-        public TextView tvDesc;
-        public TextView tvPrice;
-        public TextView tvOriginalPrice;
-        public TextView tvPlus;
-        public TextView tvNum;
-        public TextView tvAdd;
+        int position;
 
-        public ViewHolder(View view) {
+        RelativeLayout rlCheck;
+        CheckBox cbCheck;
+        ImageView ivGood;
+        TextView tvGood;
+        TextView tvDesc;
+        TextView tvPrice;
+        TextView tvOriginalPrice;
+        TextView tvPlus;
+        TextView tvNum;
+        TextView tvAdd;
+
+        ViewHolder(View view) {
+            rlCheck = (RelativeLayout) view.findViewById(R.id.rl_check);
+            cbCheck = (CheckBox) view.findViewById(R.id.cb_check);
             ivGood = (ImageView) view.findViewById(R.id.iv_good);
             tvGood = (TextView) view.findViewById(R.id.tv_good);
             tvDesc = (TextView) view.findViewById(R.id.tv_desc);
@@ -236,14 +279,34 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
             tvNum = (TextView) view.findViewById(R.id.tv_num);
             tvAdd = (TextView) view.findViewById(R.id.tv_add);
 
+            rlCheck.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (cbCheck.isChecked()) {
+                        CheckedList.remove((Integer) position);
+                        cbCheck.setChecked(false);
+                    } else {
+                        CheckedList.add(position);
+                        cbCheck.setChecked(true);
+                    }
+
+                    //是否全选
+                    cbCheckAll.setChecked(CheckedList.size() == adapter.getCount());
+
+                    countPrice();  //计算总价
+                }
+            });
+
             tvPlus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = (int) tvOriginalPrice.getTag();
+                    CartList.DataBean dataBean = cartList.get(position);
 
-                    int num = Integer.parseInt(tvNum.getText().toString());
+                    int count = dataBean.getCount();
+                    int stock = dataBean.getStock();
 
-                    Log.d("CartFragment", String.valueOf(position));
+
                 }
             });
 
@@ -272,5 +335,21 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
                 }
             });
         }
+    }
+
+    /**
+     * 计算总价
+     */
+    private void countPrice() {
+
+        float price = 0;
+
+        for (int position : CheckedList) {
+            CartList.DataBean dataBean = cartList.get(position);
+            price += dataBean.getCount() * dataBean.getPrice();
+        }
+
+        btnSettlement.setText("去结算(" + CheckedList.size() + ")");
+        tvPrice.setText(NumberUtils.toFixed2(price));
     }
 }

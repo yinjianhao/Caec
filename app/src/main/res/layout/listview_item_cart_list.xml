@@ -17,7 +17,10 @@
             android:id="@+id/cb_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
     </RelativeLayout>
 
     <ImageView
@@ -93,7 +96,6 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:background="@drawable/border_line_right"
-            android:enabled="false"
             android:gravity="center"
             android:text="-"
             android:textSize="16sp" />

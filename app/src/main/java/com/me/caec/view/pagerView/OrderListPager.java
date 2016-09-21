@@ -108,7 +108,7 @@ public class OrderListPager {
 
     public void initData() {
         decimalFormat = new DecimalFormat("0.00");
-//        srlOrderList = (SwipeRefreshLayout) rootView.findViewById(R.id.srl_order_list);
+
         lvOrderList = (ListView) rootView.findViewById(R.id.lv_order_list);
         lvOrderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -117,6 +117,8 @@ public class OrderListPager {
             }
         });
         lvOrderList.setEmptyView(rootView.findViewById(R.id.ll_empty));
+        adapter = new Adapter();
+        lvOrderList.setAdapter(adapter);
 
         getOrderList();
     }
@@ -179,12 +181,7 @@ public class OrderListPager {
                     //处理订单数据
                     orderListData = OrderUtils.processOrderListData(orderListData);
 
-                    if (adapter == null) {
-                        adapter = new Adapter();
-                        lvOrderList.setAdapter(adapter);
-                    } else {
-                        adapter.notifyDataSetChanged();
-                    }
+                    adapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(activity, "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
                 }
@@ -243,7 +240,7 @@ public class OrderListPager {
 
         @Override
         public int getCount() {
-            return orderListData.size();
+            return orderListData == null ? 0 : orderListData.size();
         }
 
         @Override
@@ -531,6 +528,13 @@ public class OrderListPager {
             btnCancel = (Button) view.findViewById(R.id.btn_cancel);
             btnPay = (Button) view.findViewById(R.id.btn_pay);
             btnConfirm = (Button) view.findViewById(R.id.btn_confirm);
+
+            llGoods.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goOrderDetail((View) v.getParent().getParent(), (int) tvTime.getTag());
+                }
+            });
 
             //再次购买
             btnBuyAgain.setOnClickListener(new View.OnClickListener() {

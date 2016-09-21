@@ -82,7 +82,7 @@
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@+id/btn_settlement"
             android:layout_toStartOf="@+id/btn_settlement"
-            android:text="¥200"
+            android:text="¥0"
             android:textColor="@color/baseRed"
             android:textSize="16sp" />
 
