@@ -63,8 +63,14 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     @ViewInject(R.id.tv_price)
     private TextView tvPrice;
 
+    @ViewInject(R.id.tv_label)
+    private TextView tvLabel;
+
     @ViewInject(R.id.btn_settlement)
     private Button btnSettlement;
+
+    @ViewInject(R.id.btn_delete)
+    private Button btnDelete;
 
     //是否是编辑状态
     private boolean isEdit = false;
@@ -74,10 +80,14 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     //当前选中的
     private List<Integer> CheckedList = new ArrayList<>();
 
+    //删除时,当前选中的
+    private List<Integer> deleteList = new ArrayList<>();
+
     @Override
     public void initData() {
         tvEdit.setOnClickListener(this);
         btnSettlement.setOnClickListener(this);
+        btnDelete.setOnClickListener(this);
 
         getCartList();
 
@@ -105,14 +115,23 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
         cbCheckAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CheckedList.clear();
-                if (cbCheckAll.isChecked()) {
-                    for (int i = 0, l = adapter.getCount(); i < l; i++) {
-                        CheckedList.add(i);
+                if (isEdit) {
+                    deleteList.clear();
+                    if (cbCheckAll.isChecked()) {
+                        for (int i = 0, l = adapter.getCount(); i < l; i++) {
+                            deleteList.add(i);
+                        }
                     }
+                } else {
+                    CheckedList.clear();
+                    if (cbCheckAll.isChecked()) {
+                        for (int i = 0, l = adapter.getCount(); i < l; i++) {
+                            CheckedList.add(i);
+                        }
+                    }
+                    countPrice();
                 }
                 adapter.notifyDataSetChanged();
-                countPrice();
             }
         });
     }
@@ -120,6 +139,72 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     /**
      * 删除购物车
      */
+    private void deleteCartMutil() {
+
+        if (deleteList.size() == 0) {
+            Toast.makeText(getActivity(), "你还没有选择商品哦!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ConfirmDialog dialog = new ConfirmDialog(getActivity());
+        dialog.setBody("你确定要删除这些商品吗?");
+        dialog.setOnConfirmListener(new ConfirmDialog.OnConfirmListener() {
+            @Override
+            public void confirm() {
+                Map<String, Object> map = new HashMap<>();
+                map.put("token", PreferencesUtils.getString(getActivity(), "token", ""));
+
+                String id = "[";
+                id = id + "\"" + cartList.get(0).getCartItemId() + "\"";
+                for (int i = 1, l = deleteList.size(); i < l; i++) {
+                    id = id + ",\"" + cartList.get(i).getCartItemId() + "\"";
+                }
+                id += "]";
+
+                map.put("cartItemIds", id);
+
+                BaseClient.post(getActivity(), RequestUrl.CART_DELETE_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        BaseBean data = (BaseBean) result;
+
+                        if (data.getResult() == 0) {
+                            for (int position : deleteList) {
+                                cartList.remove(position);
+                            }
+                            deleteList.clear();
+                            adapter.notifyDataSetChanged();
+//                            tvEdit.performClick();
+                        } else {
+                            Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+                        Toast.makeText(getActivity(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancelled(Callback.CancelledException cex) {
+
+                    }
+
+                    @Override
+                    public void onFinished() {
+
+                    }
+                });
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+        });
+        dialog.show();
+    }
+
     private void deleteCart(final int position) {
         Map<String, Object> map = new HashMap<>();
         map.put("token", PreferencesUtils.getString(getActivity(), "token", ""));
@@ -203,14 +288,44 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_edit:
-
+                edit();
                 break;
             case R.id.btn_settlement:
                 goConfirmOrder();
                 break;
+            case R.id.btn_delete:
+                deleteCartMutil();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 编辑
+     */
+    private void edit() {
+        isEdit = !isEdit;
+        if (isEdit) {
+            tvEdit.setText("完成");
+            tvLabel.setVisibility(View.GONE);
+            tvPrice.setVisibility(View.GONE);
+            btnDelete.setVisibility(View.VISIBLE);
+            btnSettlement.setVisibility(View.GONE);
+
+            cbCheckAll.setChecked(false);
+            deleteList.clear();
+        } else {
+            tvEdit.setText("编辑");
+            tvLabel.setVisibility(View.VISIBLE);
+            tvPrice.setVisibility(View.VISIBLE);
+            btnDelete.setVisibility(View.GONE);
+            btnSettlement.setVisibility(View.VISIBLE);
+
+            cbCheckAll.setChecked(CheckedList.size() == cartList.size());
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -269,7 +384,7 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
             CartList.DataBean dataBean = getItem(position);
 
             viewHolder.position = position;   //设置当前位置
-            viewHolder.cbCheck.setChecked(CheckedList.contains(position));
+            viewHolder.cbCheck.setChecked(isEdit ? deleteList.contains(position) : CheckedList.contains(position));
             x.image().bind(viewHolder.ivGood, dataBean.getImg(), ImageUtils.getDefaultImageOptions());
             viewHolder.tvGood.setText(dataBean.getName());
             viewHolder.tvDesc.setText(dataBean.getProp());
@@ -320,18 +435,31 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
             rlCheck.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (cbCheck.isChecked()) {
-                        CheckedList.remove((Integer) position);
-                        cbCheck.setChecked(false);
+                    if (isEdit) {       //编辑
+                        if (cbCheck.isChecked()) {
+                            deleteList.remove((Integer) position);
+                            cbCheck.setChecked(false);
+                        } else {
+                            deleteList.add(position);
+                            cbCheck.setChecked(true);
+                        }
+
+                        //是否全选
+                        cbCheckAll.setChecked(deleteList.size() == adapter.getCount());
                     } else {
-                        CheckedList.add(position);
-                        cbCheck.setChecked(true);
+                        if (cbCheck.isChecked()) {
+                            CheckedList.remove((Integer) position);
+                            cbCheck.setChecked(false);
+                        } else {
+                            CheckedList.add(position);
+                            cbCheck.setChecked(true);
+                        }
+
+                        //是否全选
+                        cbCheckAll.setChecked(CheckedList.size() == adapter.getCount());
+
+                        countPrice();  //计算总价
                     }
-
-                    //是否全选
-                    cbCheckAll.setChecked(CheckedList.size() == adapter.getCount());
-
-                    countPrice();  //计算总价
                 }
             });
 
