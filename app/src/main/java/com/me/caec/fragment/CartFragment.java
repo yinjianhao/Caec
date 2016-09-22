@@ -19,6 +19,9 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.handmark.pulltorefresh.library.ILoadingLayout;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.me.caec.R;
 import com.me.caec.activity.ConfirmOrderActivity;
 import com.me.caec.bean.BaseBean;
@@ -89,7 +92,8 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
         btnSettlement.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
 
-        getCartList();
+        adapter = new Adapter();
+        lvCart.setAdapter(adapter);
 
         lvCart.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -134,6 +138,8 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
                 adapter.notifyDataSetChanged();
             }
         });
+
+        getCartList();
     }
 
     /**
@@ -258,10 +264,7 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
 
                 if (data.getResult() == 0) {
                     cartList = data.getData();
-                    if (adapter == null) {
-                        adapter = new Adapter();
-                        lvCart.setAdapter(adapter);
-                    }
+                    adapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
                 }
@@ -357,7 +360,7 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
 
         @Override
         public int getCount() {
-            return cartList.size();
+            return cartList == null ? 0 : cartList.size();
         }
 
         @Override
