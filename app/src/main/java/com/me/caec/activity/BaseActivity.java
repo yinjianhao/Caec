@@ -24,7 +24,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         x.view().inject(this);
 
         render();
-        onShow();
     }
 
     public abstract void initContentView();
@@ -34,8 +33,14 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public abstract void render();
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        onShow();
+    }
+
     /**
-     * 初始化数据(可以多次调用)
+     * 初始化数据(多次调用)
      */
     public abstract void onShow();
 

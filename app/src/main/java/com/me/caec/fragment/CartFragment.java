@@ -177,6 +177,9 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
                         if (data.getResult() == 0) {
                             for (int position : deleteList) {
                                 cartList.remove(position);
+                                if (CheckedList.contains(position)) {
+                                    CheckedList.remove((Integer) position);
+                                }
                             }
                             deleteList.clear();
                             adapter.notifyDataSetChanged();
