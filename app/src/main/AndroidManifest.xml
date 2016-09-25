@@ -42,7 +42,9 @@
         <activity android:name=".activity.OrderDetailPayActivity" />
         <activity android:name=".activity.OrderDetailNormalActivity" />
         <activity android:name=".activity.OrderDetailCancelActivity" />
-        <activity android:name=".activity.ConfirmOrderActivity"></activity>
+        <activity android:name=".activity.ConfirmOrderActivity" />
+        <activity android:name=".activity.DistributorActivity" />
+        <activity android:name=".activity.BuyTypeActivity"></activity>
     </application>
 
 </manifest>

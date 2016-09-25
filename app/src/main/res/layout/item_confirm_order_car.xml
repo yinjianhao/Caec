@@ -2,8 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:layout_marginTop="10dp"
     android:background="#fff"
     android:orientation="vertical"
     android:paddingLeft="10dp">
@@ -23,7 +21,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="28dp"
-        android:paddingTop="10dp"
+        android:gravity="center_vertical"
         android:text="款型"
         android:textSize="13sp" />
 
@@ -35,6 +33,7 @@
         android:background="@color/border" />
 
     <LinearLayout
+        android:id="@+id/ll_distributor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -50,6 +49,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:id="@+id/tv_distributor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -68,6 +68,7 @@
         android:background="@color/border" />
 
     <LinearLayout
+        android:id="@+id/ll_buy_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -83,6 +84,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:id="@+id/tv_buy_type"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -132,6 +134,7 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/tv_price_count"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:gravity="end"
@@ -157,6 +160,7 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/tv_deposit"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:gravity="end"

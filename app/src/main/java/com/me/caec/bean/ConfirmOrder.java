@@ -146,13 +146,13 @@ public class ConfirmOrder {
         public static class CarsBean {
             private String optionalInfo;
             private int id;
-            private double price;
+            private float price;
             private int count;
-            private double originalPrice;
+            private float originalPrice;
             private String name;
             private String prop;
             private String img;
-            private double pay;
+            private float pay;
             private String url;
 
             public String getOptionalInfo() {
@@ -171,11 +171,11 @@ public class ConfirmOrder {
                 this.id = id;
             }
 
-            public double getPrice() {
+            public float getPrice() {
                 return price;
             }
 
-            public void setPrice(double price) {
+            public void setPrice(float price) {
                 this.price = price;
             }
 
@@ -187,11 +187,11 @@ public class ConfirmOrder {
                 this.count = count;
             }
 
-            public double getOriginalPrice() {
+            public float getOriginalPrice() {
                 return originalPrice;
             }
 
-            public void setOriginalPrice(double originalPrice) {
+            public void setOriginalPrice(float originalPrice) {
                 this.originalPrice = originalPrice;
             }
 
@@ -219,11 +219,11 @@ public class ConfirmOrder {
                 this.img = img;
             }
 
-            public double getPay() {
+            public float getPay() {
                 return pay;
             }
 
-            public void setPay(double pay) {
+            public void setPay(float pay) {
                 this.pay = pay;
             }
 
@@ -238,9 +238,9 @@ public class ConfirmOrder {
 
         public static class PartsBean {
             private int id;
-            private double price;
+            private float price;
             private int count;
-            private double originalPrice;
+            private float originalPrice;
             private int carriage;
             private String name;
             private String prop;
@@ -255,11 +255,11 @@ public class ConfirmOrder {
                 this.id = id;
             }
 
-            public double getPrice() {
+            public float getPrice() {
                 return price;
             }
 
-            public void setPrice(double price) {
+            public void setPrice(float price) {
                 this.price = price;
             }
 
@@ -271,11 +271,11 @@ public class ConfirmOrder {
                 this.count = count;
             }
 
-            public double getOriginalPrice() {
+            public float getOriginalPrice() {
                 return originalPrice;
             }
 
-            public void setOriginalPrice(double originalPrice) {
+            public void setOriginalPrice(float originalPrice) {
                 this.originalPrice = originalPrice;
             }
 
@@ -326,7 +326,7 @@ public class ConfirmOrder {
             private String startDate;
             private String title;
             private String desc;
-            private double price;
+            private float price;
             private String rule;
             private boolean enable;
             private String endDate;
@@ -373,11 +373,11 @@ public class ConfirmOrder {
                 this.desc = desc;
             }
 
-            public double getPrice() {
+            public float getPrice() {
                 return price;
             }
 
-            public void setPrice(double price) {
+            public void setPrice(float price) {
                 this.price = price;
             }
 

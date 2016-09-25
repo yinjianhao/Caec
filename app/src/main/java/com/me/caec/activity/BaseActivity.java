@@ -62,7 +62,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_OK && data.getBooleanExtra("reload", false)) {
+        if (resultCode == RESULT_OK && data.getBooleanExtra("reload", false)) {
             reloadData();
         }
     }

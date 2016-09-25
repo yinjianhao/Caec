@@ -2,23 +2,93 @@ package com.me.caec.activity;
 
 import android.content.Intent;
 import android.content.res.ObbInfo;
+import android.graphics.Paint;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.me.caec.R;
 import com.me.caec.bean.ConfirmOrder;
 import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
+import com.me.caec.utils.DpTransforUtils;
+import com.me.caec.utils.ImageUtils;
+import com.me.caec.utils.NumberUtils;
 import com.me.caec.utils.PreferencesUtils;
 
 import org.xutils.common.Callback;
+import org.xutils.view.annotation.ViewInject;
+import org.xutils.x;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class ConfirmOrderActivity extends BaseActivity {
+public class ConfirmOrderActivity extends BaseActivity implements View.OnClickListener {
+
+    @ViewInject(R.id.tv_title)
+    private TextView tvTitle;
+
+    @ViewInject(R.id.btn_back)
+    private LinearLayout tvBack;
+
+    @ViewInject(R.id.ll_good_content)
+    private LinearLayout llGoodContent;
+
+    @ViewInject(R.id.sv_body)
+    private ScrollView svBody;
+
+    @ViewInject(R.id.rl_footer)
+    private RelativeLayout rlFooter;
+
+    @ViewInject(R.id.tv_goods_price)
+    private TextView tvGoodsPrice;
+
+    @ViewInject(R.id.tv_freight)
+    private TextView tvFreight;
+
+    @ViewInject(R.id.tv_discount)
+    private TextView tvDiscount;
+
+    @ViewInject(R.id.tv_order_price)
+    private TextView tvOrderPrice;
+
+    @ViewInject(R.id.cb_check)
+    private CheckBox cbCheck;
+
+    @ViewInject(R.id.tv_total_price)
+    private TextView tvTotalPrice;
+
+    @ViewInject(R.id.btn_confirm)
+    private Button btnConfirm;
+
+    private final int TYPE_DISTRIBUTOR = 1;
+    private final int TYPE_BUY = 2;
+    private final int TYPE_ADDRESS = 3;
+    private final int TYPE_RECEIPT = 4;
+    private final int TYPE_COUPON = 5;
 
     private ConfirmOrder.DataBean dataBean;
+
+    private float orderTotalPrice = 0;  //订单总额(包含运费)
+
+    private LinearLayout currentVIew;
+
+    private List<Distributor> distributors;
+
+    private List<BuyType> buyTypes;
+
+    private String[] orderMsgs;
 
     @Override
     public void initContentView() {
@@ -27,6 +97,9 @@ public class ConfirmOrderActivity extends BaseActivity {
 
     @Override
     public void render() {
+        tvTitle.setText("确认订单");
+        tvBack.setOnClickListener(this);
+
         Intent intent = getIntent();
         String params = intent.getStringExtra("params");
         getConfirmOrderList(params);
@@ -35,6 +108,45 @@ public class ConfirmOrderActivity extends BaseActivity {
     @Override
     public void onShow() {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_back:
+                finish();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case TYPE_DISTRIBUTOR:
+                    Bundle extras = data.getExtras();
+                    String proName = extras.getString("provinceName");
+                    String cityName = extras.getString("cityName");
+                    String dealerName = extras.getString("dealerName");
+                    TextView tv = (TextView) currentVIew.findViewById(R.id.tv_distributor);
+                    tv.setText(proName + " " + cityName + "\n" + dealerName);
+                    break;
+                case TYPE_BUY:
+                    break;
+                case TYPE_ADDRESS:
+                    break;
+                case TYPE_RECEIPT:
+                    break;
+                case TYPE_COUPON:
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     /**
@@ -80,6 +192,133 @@ public class ConfirmOrderActivity extends BaseActivity {
      * 渲染列表
      */
     private void initConfirmList() {
+        float goodsTotalPrice = 0;
 
+        final List<ConfirmOrder.DataBean.CarsBean> cars = dataBean.getCars();
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = DpTransforUtils.dp2px(this, 10);
+
+        for (int i = 0, l = cars.size(); i < l; i++) {
+            final ConfirmOrder.DataBean.CarsBean car = cars.get(i);
+            View carView = View.inflate(this, R.layout.item_confirm_order_car, null);
+            carView.setLayoutParams(params);
+            final LinearLayout llDistributor = (LinearLayout) carView.findViewById(R.id.ll_distributor);
+            final LinearLayout llBuyType = (LinearLayout) carView.findViewById(R.id.ll_buy_type);
+            ImageView ivGood = (ImageView) carView.findViewById(R.id.iv_good);
+            TextView tvGoodName = (TextView) carView.findViewById(R.id.tv_good_name);
+            TextView tvGoodDesc = (TextView) carView.findViewById(R.id.tv_good_desc);
+            TextView tvPrice = (TextView) carView.findViewById(R.id.tv_price);
+            TextView tvOldPrice = (TextView) carView.findViewById(R.id.tv_old_price);
+            TextView tvNum = (TextView) carView.findViewById(R.id.tv_num);
+            TextView tvPriceCount = (TextView) carView.findViewById(R.id.tv_price_count);
+            TextView tvDeposit = (TextView) carView.findViewById(R.id.tv_deposit);
+
+            llDistributor.setTag(i);
+            llDistributor.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    currentVIew = llDistributor;
+                    Intent i = new Intent(ConfirmOrderActivity.this, DistributorActivity.class);
+                    i.putExtra("carId", car.getId());
+                    startActivityForResult(i, TYPE_DISTRIBUTOR);
+                }
+            });
+
+            llBuyType.setTag(i);
+            llBuyType.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    currentVIew = llBuyType;
+                    Intent i = new Intent(ConfirmOrderActivity.this, BuyTypeActivity.class);
+                    startActivityForResult(i, TYPE_BUY);
+                }
+            });
+
+            x.image().bind(ivGood, car.getImg(), ImageUtils.getDefaultImageOptions());
+            tvGoodName.setText(car.getName());
+            tvGoodDesc.setText(car.getProp());
+            tvPrice.setText("¥" + NumberUtils.toFixed2(car.getPrice()));
+            tvOldPrice.setText("¥" + NumberUtils.toFixed2(car.getOriginalPrice()));
+            tvOldPrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG); // 设置中划线并加清晰
+            tvNum.setText("x" + car.getCount());
+
+            tvPriceCount.setText("¥" + NumberUtils.toFixed2(car.getPrice()));
+            tvDeposit.setText("¥" + NumberUtils.toFixed2(car.getPay()));
+
+            goodsTotalPrice += car.getPay();
+
+            llGoodContent.addView(carView);
+        }
+
+        List<ConfirmOrder.DataBean.PartsBean> parts = dataBean.getParts();
+
+        View partView = View.inflate(this, R.layout.item_confirm_order_part, null);
+        partView.setLayoutParams(params);
+
+        LinearLayout llPartContent = (LinearLayout) partView.findViewById(R.id.ll_part_content);
+        TextView tvPriceCount = (TextView) partView.findViewById(R.id.tv_price_count);
+        TextView tvCarriage = (TextView) partView.findViewById(R.id.tv_carriage);
+
+        float totalPrice = 0;
+        float carriage = 0;
+
+        for (ConfirmOrder.DataBean.PartsBean part : parts) {
+            View goodView = View.inflate(this, R.layout.item_order_detail_good, null);
+            ImageView ivGood = (ImageView) goodView.findViewById(R.id.iv_good);
+            TextView tvGoodName = (TextView) goodView.findViewById(R.id.tv_good_name);
+            TextView tvGoodDesc = (TextView) goodView.findViewById(R.id.tv_good_desc);
+            TextView tvPrice = (TextView) goodView.findViewById(R.id.tv_price);
+            TextView tvOldPrice = (TextView) goodView.findViewById(R.id.tv_old_price);
+            TextView tvNum = (TextView) goodView.findViewById(R.id.tv_num);
+
+            x.image().bind(ivGood, part.getImg(), ImageUtils.getDefaultImageOptions());
+            tvGoodName.setText(part.getName());
+            tvGoodDesc.setText(part.getProp());
+            tvPrice.setText("¥" + NumberUtils.toFixed2(part.getPrice()));
+            tvOldPrice.setText("¥" + NumberUtils.toFixed2(part.getOriginalPrice()));
+            tvOldPrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG); // 设置中划线并加清晰
+            tvNum.setText("x" + part.getCount());
+
+            totalPrice += part.getPrice();
+            carriage += part.getCarriage();
+
+            llPartContent.addView(goodView);
+        }
+        tvPriceCount.setText("¥" + NumberUtils.toFixed2(totalPrice + carriage));
+        tvCarriage.setText("¥" + NumberUtils.toFixed2(carriage));
+        llGoodContent.addView(partView);
+
+        orderTotalPrice = goodsTotalPrice += totalPrice + carriage;
+
+        tvGoodsPrice.setText("¥" + NumberUtils.toFixed2(goodsTotalPrice));
+        tvFreight.setText("¥" + NumberUtils.toFixed2(carriage));
+        tvDiscount.setText("¥0.00");
+        tvOrderPrice.setText("¥" + NumberUtils.toFixed2(goodsTotalPrice));
+        tvTotalPrice.setText("¥" + NumberUtils.toFixed2(goodsTotalPrice));
+        btnConfirm.setText("提交订单(" + (cars.size() + parts.size()) + ")");
+
+        svBody.setVisibility(View.VISIBLE);
+        rlFooter.setVisibility(View.VISIBLE);
+
+        //初始化
+        distributors = new ArrayList<>(cars.size());
+        buyTypes = new ArrayList<>(cars.size());
+        orderMsgs = new String[cars.size()];
+    }
+
+    private class Distributor {
+        public int id;
+        public int dealerId;
+        public int provinceId;
+        public int cityId;
+    }
+
+    private class BuyType {
+        public int type;
+        public String receiver;
+        public String mobile;
+        public String no;
+        public String name;
     }
 }

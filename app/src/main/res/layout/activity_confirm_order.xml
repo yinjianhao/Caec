@@ -7,10 +7,14 @@
     android:orientation="vertical"
     tools:context="com.me.caec.activity.ConfirmOrderActivity">
 
+    <include layout="@layout/title_bar" />
+
     <ScrollView
+        android:id="@+id/sv_body"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,13 +27,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <include layout="@layout/item_confirm_order_car" />
-
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:background="#fff"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -74,7 +77,7 @@
                     android:layout_marginLeft="22dp"
                     android:gravity="center_vertical"
                     android:text="商品总额"
-                    android:textColor="@color/color333" />
+                    android:textColor="@color/baseRed" />
 
                 <TextView
                     android:id="@+id/tv_goods_price"
@@ -92,7 +95,7 @@
                     android:layout_below="@+id/tv_label1"
                     android:gravity="center_vertical"
                     android:text="运费"
-                    android:textColor="@color/color333" />
+                    android:textColor="@color/baseRed" />
 
                 <TextView
                     android:id="@+id/tv_freight"
@@ -111,7 +114,7 @@
                     android:layout_below="@+id/tv_label2"
                     android:gravity="center_vertical"
                     android:text="优惠"
-                    android:textColor="@color/color333" />
+                    android:textColor="@color/baseRed" />
 
                 <TextView
                     android:id="@+id/tv_discount"
@@ -130,7 +133,7 @@
                     android:layout_below="@+id/tv_label3"
                     android:gravity="center_vertical"
                     android:text="订单总额"
-                    android:textColor="@color/color333" />
+                    android:textColor="@color/baseRed" />
 
                 <TextView
                     android:id="@+id/tv_order_price"
@@ -164,8 +167,10 @@
                 android:paddingLeft="10dp">
 
                 <CheckBox
+                    android:id="@+id/cb_check"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:checked="true" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -184,11 +189,13 @@
     </ScrollView>
 
     <RelativeLayout
+        android:id="@+id/rl_footer"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#fff"
+        android:background="@drawable/border_line_top"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:paddingRight="10dp"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/tv_1"
@@ -198,6 +205,7 @@
             android:text="合计：" />
 
         <TextView
+            android:id="@+id/tv_total_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -207,6 +215,7 @@
             android:textColor="@color/baseRed" />
 
         <Button
+            android:id="@+id/btn_confirm"
             android:layout_width="106dp"
             android:layout_height="30dp"
             android:layout_alignParentEnd="true"

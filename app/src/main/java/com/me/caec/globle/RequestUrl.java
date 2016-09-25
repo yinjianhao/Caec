@@ -118,4 +118,7 @@ public class RequestUrl {
 
     //提交订单
     public static final String CONFIRM_ORDER_URL = SERVICE_URL + "/main/order/confirm";
+
+    //经销商列表
+    public static final String DISTRIBUTOR_LIST_URL = SERVICE_URL + "/main/dealer/list";
 }
