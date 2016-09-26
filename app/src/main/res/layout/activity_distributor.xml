@@ -9,12 +9,42 @@
 
     <include layout="@layout/title_bar" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="#fff"
+        android:paddingBottom="6dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="6dp">
+
+        <TextView
+            android:id="@+id/tv_select"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/selector_btn_border_normal"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:text="重庆 重庆市" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_action_down_item" />
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/lv_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:divider="@color/border"
+        android:dividerHeight="1px">
 
     </ListView>
 

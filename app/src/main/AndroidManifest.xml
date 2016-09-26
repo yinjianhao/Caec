@@ -44,7 +44,9 @@
         <activity android:name=".activity.OrderDetailCancelActivity" />
         <activity android:name=".activity.ConfirmOrderActivity" />
         <activity android:name=".activity.DistributorActivity" />
-        <activity android:name=".activity.BuyTypeActivity"></activity>
+        <activity
+            android:name=".activity.BuyTypeActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

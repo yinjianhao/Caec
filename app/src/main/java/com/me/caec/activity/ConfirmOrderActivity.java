@@ -78,15 +78,17 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
     private final int TYPE_RECEIPT = 4;
     private final int TYPE_COUPON = 5;
 
+    private final int TAG_DISTRIBUTOR = 1;
+
     private ConfirmOrder.DataBean dataBean;
 
     private float orderTotalPrice = 0;  //订单总额(包含运费)
 
     private LinearLayout currentVIew;
 
-    private List<Distributor> distributors;
+    private Map<String, Distributor> distributors;
 
-    private List<BuyType> buyTypes;
+    private Map<String, BuyType> buyTypes;
 
     private String[] orderMsgs;
 
@@ -129,13 +131,20 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             switch (requestCode) {
                 case TYPE_DISTRIBUTOR:
                     Bundle extras = data.getExtras();
+                    int id = extras.getInt("id");
                     String proName = extras.getString("provinceName");
+                    int proId = extras.getInt("provinceId");
                     String cityName = extras.getString("cityName");
+                    int cityId = extras.getInt("cityId");
                     String dealerName = extras.getString("dealerName");
+                    int dealerId = extras.getInt("dealerId");
                     TextView tv = (TextView) currentVIew.findViewById(R.id.tv_distributor);
                     tv.setText(proName + " " + cityName + "\n" + dealerName);
+
+                    distributors.put(currentVIew.getTag().toString(), new Distributor(id, dealerId, proId, cityId));
                     break;
                 case TYPE_BUY:
+
                     break;
                 case TYPE_ADDRESS:
                     break;
@@ -196,6 +205,11 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
 
         final List<ConfirmOrder.DataBean.CarsBean> cars = dataBean.getCars();
 
+        //初始化
+        distributors = new HashMap<>();
+        buyTypes = new HashMap<>();
+        orderMsgs = new String[cars.size()];
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.topMargin = DpTransforUtils.dp2px(this, 10);
 
@@ -203,8 +217,8 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             final ConfirmOrder.DataBean.CarsBean car = cars.get(i);
             View carView = View.inflate(this, R.layout.item_confirm_order_car, null);
             carView.setLayoutParams(params);
-            final LinearLayout llDistributor = (LinearLayout) carView.findViewById(R.id.ll_distributor);
-            final LinearLayout llBuyType = (LinearLayout) carView.findViewById(R.id.ll_buy_type);
+            LinearLayout llDistributor = (LinearLayout) carView.findViewById(R.id.ll_distributor);
+            LinearLayout llBuyType = (LinearLayout) carView.findViewById(R.id.ll_buy_type);
             ImageView ivGood = (ImageView) carView.findViewById(R.id.iv_good);
             TextView tvGoodName = (TextView) carView.findViewById(R.id.tv_good_name);
             TextView tvGoodDesc = (TextView) carView.findViewById(R.id.tv_good_desc);
@@ -218,9 +232,16 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             llDistributor.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    currentVIew = llDistributor;
+                    currentVIew = (LinearLayout) v;
                     Intent i = new Intent(ConfirmOrderActivity.this, DistributorActivity.class);
+                    Distributor distributor = distributors.get(v.getTag().toString());
                     i.putExtra("carId", car.getId());
+                    if (distributor != null) {
+                        i.putExtra("dealerId", distributor.dealerId);
+                        i.putExtra("provinceId", distributor.provinceId);
+                        i.putExtra("cityId", distributor.cityId);
+                    }
+
                     startActivityForResult(i, TYPE_DISTRIBUTOR);
                 }
             });
@@ -229,7 +250,7 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             llBuyType.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    currentVIew = llBuyType;
+                    currentVIew = (LinearLayout) v;
                     Intent i = new Intent(ConfirmOrderActivity.this, BuyTypeActivity.class);
                     startActivityForResult(i, TYPE_BUY);
                 }
@@ -300,11 +321,6 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
 
         svBody.setVisibility(View.VISIBLE);
         rlFooter.setVisibility(View.VISIBLE);
-
-        //初始化
-        distributors = new ArrayList<>(cars.size());
-        buyTypes = new ArrayList<>(cars.size());
-        orderMsgs = new String[cars.size()];
     }
 
     private class Distributor {
@@ -312,6 +328,13 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         public int dealerId;
         public int provinceId;
         public int cityId;
+
+        public Distributor(int id, int dealerId, int provinceId, int cityId) {
+            this.id = id;
+            this.dealerId = dealerId;
+            this.provinceId = provinceId;
+            this.cityId = cityId;
+        }
     }
 
     private class BuyType {
@@ -320,5 +343,13 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         public String mobile;
         public String no;
         public String name;
+
+        public BuyType(int type, String receiver, String mobile, String no, String name) {
+            this.type = type;
+            this.receiver = receiver;
+            this.mobile = mobile;
+            this.no = no;
+            this.name = name;
+        }
     }
 }
