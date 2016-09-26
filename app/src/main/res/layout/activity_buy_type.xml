@@ -31,11 +31,20 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="标题"
+            android:text="个人购买"
             android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/tv_title"
+            android:layout_toRightOf="@+id/tv_title"
+            android:src="@drawable/ic_action_down_item" />
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/ll_person"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rl_title"
@@ -66,7 +75,6 @@
                 android:layout_weight="1"
                 android:background="@drawable/background_white"
                 android:hint="请输入提车人名"
-                android:inputType="phone"
                 android:maxLength="11"
                 android:textSize="16sp" />
 
@@ -127,13 +135,14 @@
                 android:background="@drawable/background_white"
                 android:hint="请输入身份证"
                 android:inputType="phone"
-                android:maxLength="11"
+                android:maxLength="18"
                 android:textSize="16sp" />
 
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_company"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rl_title"
@@ -165,8 +174,6 @@
                 android:layout_weight="1"
                 android:background="@drawable/background_white"
                 android:hint="请输入企业全称"
-                android:inputType="phone"
-                android:maxLength="11"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -196,7 +203,6 @@
                 android:background="@drawable/background_white"
                 android:hint="请输入营业执照"
                 android:inputType="phone"
-                android:maxLength="11"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -225,8 +231,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/background_white"
                 android:hint="请输入经办人姓名"
-                android:inputType="phone"
-                android:maxLength="11"
+                android:maxLength="10"
                 android:textSize="16sp" />
 
         </LinearLayout>

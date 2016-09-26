@@ -128,9 +128,9 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
             switch (requestCode) {
                 case TYPE_DISTRIBUTOR:
-                    Bundle extras = data.getExtras();
                     int id = extras.getInt("id");
                     String proName = extras.getString("provinceName");
                     int proId = extras.getInt("provinceId");
@@ -144,7 +144,16 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
                     distributors.put(currentVIew.getTag().toString(), new Distributor(id, dealerId, proId, cityId));
                     break;
                 case TYPE_BUY:
+                    int type = extras.getInt("type");
+                    String receiver = extras.getString("receiver");
+                    String mobile = extras.getString("mobile");
+                    String no = extras.getString("no");
+                    String name = extras.getString("name");
 
+                    tv = (TextView) currentVIew.findViewById(R.id.tv_buy_type);
+                    tv.setText(receiver + "\n" + mobile + "\n" + no);
+
+                    buyTypes.put(currentVIew.getTag().toString(), new BuyType(type, receiver, mobile, no, name));
                     break;
                 case TYPE_ADDRESS:
                     break;
@@ -252,6 +261,15 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
                 public void onClick(View v) {
                     currentVIew = (LinearLayout) v;
                     Intent i = new Intent(ConfirmOrderActivity.this, BuyTypeActivity.class);
+
+                    BuyType buyType = buyTypes.get(v.getTag().toString());
+                    if (buyType != null) {
+                        i.putExtra("receiver", buyType.receiver);
+                        i.putExtra("type", buyType.type);
+                        i.putExtra("name", buyType.name);
+                        i.putExtra("no", buyType.no);
+                        i.putExtra("mobile", buyType.mobile);
+                    }
                     startActivityForResult(i, TYPE_BUY);
                 }
             });
