@@ -84,6 +84,7 @@ public class BuyTypeActivity extends BaseActivity implements View.OnClickListene
             etName.setText(receiver);
             etCard.setText(no);
         } else {
+            tvTitle.setText("企业购买");
             etCompanyName.setText(name);
             etChargeName.setText(receiver);
             etLicense.setText(no);

@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.content.res.ObbInfo;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -72,10 +75,13 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
     @ViewInject(R.id.btn_confirm)
     private Button btnConfirm;
 
+    @ViewInject(R.id.tv_coupon)
+    private TextView tvCoupon;
+
     private final int TYPE_DISTRIBUTOR = 1;
     private final int TYPE_BUY = 2;
     private final int TYPE_ADDRESS = 3;
-    private final int TYPE_RECEIPT = 4;
+    private final int TYPE_INVOICE = 4;
     private final int TYPE_COUPON = 5;
 
     private final int TAG_DISTRIBUTOR = 1;
@@ -91,6 +97,14 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
     private Map<String, BuyType> buyTypes;
 
     private String[] orderMsgs;
+
+    private String receivingId;
+
+    private int invoiceType;
+
+    private String invoiceCompony;
+
+    private String couponId;
 
     @Override
     public void initContentView() {
@@ -156,10 +170,40 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
                     buyTypes.put(currentVIew.getTag().toString(), new BuyType(type, receiver, mobile, no, name));
                     break;
                 case TYPE_ADDRESS:
+                    receivingId = extras.getString("receivingId");
+                    receiver = extras.getString("receiver");
+                    mobile = extras.getString("mobile");
+                    String provinceName = extras.getString("provinceName");
+                    cityName = extras.getString("cityName");
+                    String areaName = extras.getString("areaName");
+                    String address = extras.getString("address");
+                    String zip = extras.getString("zip");
+
+                    if (!receivingId.isEmpty()) {
+                        tv = (TextView) currentVIew.findViewById(R.id.tv_receiver);
+                        tv.setText(receiver + " 手机：" + mobile + "\n" + provinceName + cityName + areaName + address + "\n" + zip);
+                    }
                     break;
-                case TYPE_RECEIPT:
+                case TYPE_INVOICE:
+                    invoiceType = extras.getInt("type");
+                    invoiceCompony = extras.getString("companyName");
+
+                    tv = (TextView) currentVIew.findViewById(R.id.tv_invoice);
+
+                    if (invoiceType == 1) {
+                        tv.setText("个人");
+                    } else if (invoiceType == 2) {
+                        tv.setText("公司" + "\n" + invoiceCompony);
+                    } else {
+                        tv.setText("不需要发票");
+                    }
                     break;
                 case TYPE_COUPON:
+                    couponId = extras.getString("id");
+                    float price = extras.getFloat("price");
+
+                    tvCoupon.setTextColor(getResources().getColor(R.color.baseRed));
+                    tvCoupon.setText("-¥" + NumberUtils.toFixed2(price));
                     break;
                 default:
                     break;
@@ -236,6 +280,7 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             TextView tvNum = (TextView) carView.findViewById(R.id.tv_num);
             TextView tvPriceCount = (TextView) carView.findViewById(R.id.tv_price_count);
             TextView tvDeposit = (TextView) carView.findViewById(R.id.tv_deposit);
+            EditText etMsg = (EditText) carView.findViewById(R.id.et_msg);
 
             llDistributor.setTag(i);
             llDistributor.setOnClickListener(new View.OnClickListener() {
@@ -274,6 +319,25 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
                 }
             });
 
+            llBuyType.setTag(i);
+            final int finalI = i;
+            etMsg.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    orderMsgs[finalI] = s.toString();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
             x.image().bind(ivGood, car.getImg(), ImageUtils.getDefaultImageOptions());
             tvGoodName.setText(car.getName());
             tvGoodDesc.setText(car.getProp());
@@ -296,8 +360,35 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         partView.setLayoutParams(params);
 
         LinearLayout llPartContent = (LinearLayout) partView.findViewById(R.id.ll_part_content);
+        LinearLayout llReceiver = (LinearLayout) partView.findViewById(R.id.ll_receiver);
+        LinearLayout llInvoice = (LinearLayout) partView.findViewById(R.id.ll_invoice);
         TextView tvPriceCount = (TextView) partView.findViewById(R.id.tv_price_count);
         TextView tvCarriage = (TextView) partView.findViewById(R.id.tv_carriage);
+
+        llReceiver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentVIew = (LinearLayout) v;
+                Intent i = new Intent(ConfirmOrderActivity.this, ChooseAddressActivity.class);
+
+                i.putExtra("receivingId", receivingId);
+
+                startActivityForResult(i, TYPE_ADDRESS);
+            }
+        });
+
+        llInvoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentVIew = (LinearLayout) v;
+                Intent i = new Intent(ConfirmOrderActivity.this, InvoiceActivity.class);
+
+                i.putExtra("type", invoiceType);
+                i.putExtra("companyName", invoiceCompony);
+
+                startActivityForResult(i, TYPE_INVOICE);
+            }
+        });
 
         float totalPrice = 0;
         float carriage = 0;

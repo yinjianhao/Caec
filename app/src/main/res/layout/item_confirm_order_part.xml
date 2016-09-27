@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="43dp"
         android:gravity="center_vertical"
-        android:text="爱车订单"
+        android:text="精品订单"
         android:textSize="16sp" />
 
     <LinearLayout
@@ -28,6 +28,7 @@
         android:background="@color/border" />
 
     <LinearLayout
+        android:id="@+id/ll_receiver"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -43,6 +44,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:id="@+id/tv_receiver"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -61,6 +63,7 @@
         android:background="@color/border" />
 
     <LinearLayout
+        android:id="@+id/ll_invoice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -76,6 +79,7 @@
             android:textSize="13sp" />
 
         <TextView
+            android:id="@+id/tv_invoice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -94,6 +98,7 @@
         android:background="@color/border" />
 
     <EditText
+        android:id="@+id/et_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"

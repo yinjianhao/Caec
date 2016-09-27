@@ -31,4 +31,5 @@ dependencies {
     compile files('src/main/lib/bcprov-ext-jdk15on-1.53.jar')
     compile files('src/main/lib/commons-codec-1.10.jar')
     compile project(':pullToRefresh')
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

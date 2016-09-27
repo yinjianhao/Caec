@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddressListActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddressListActivity extends BaseActivity implements View.OnClickListener {
 
     @ViewInject(R.id.tv_title)
     private TextView tvTitle;
@@ -59,18 +59,33 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_address_list);
+
 
         x.view().inject(this);
-        initView();
+
     }
 
-    private void initView() {
+    @Override
+    public void initContentView() {
+        setContentView(R.layout.activity_address_list);
+    }
+
+    @Override
+    public void render() {
         tvTitle.setText("收货地址管理");
         tvBack.setOnClickListener(this);
         btnNew.setOnClickListener(this);
+        getAddressList();
+    }
 
-//        getAddressList();
+    @Override
+    public void onShow() {
+
+    }
+
+    @Override
+    public void reloadData() {
+        getAddressList();
     }
 
     @Override
@@ -82,26 +97,17 @@ public class AddressListActivity extends AppCompatActivity implements View.OnCli
             case R.id.btn_new:
                 Intent i = new Intent(AddressListActivity.this, CreateAddressActivity.class);
                 i.putExtra("type", CreateAddressActivity.FLAG_ADDRESS_CREATE);
-                startActivity(i);
+                startActivityForResult(i, 1);
                 break;
             default:
                 break;
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getAddressList();
-    }
-
     /**
      * 获取地址列表
      */
     private void getAddressList() {
-        RequestParams params = new RequestParams(RequestUrl.ADDRESS_LIST_URL);
-        params.addQueryStringParameter("token", PreferencesUtils.getString(this, "token", ""));
-
         Map<String, Object> map = new HashMap<>();
         map.put("token", PreferencesUtils.getString(this, "token", ""));
 

@@ -282,6 +282,9 @@ public class CreateAddressActivity extends AppCompatActivity implements View.OnC
 
                 if (data.getResult() == 0) {
                     Toast.makeText(getApplicationContext(), "保存地址成功", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent();
+                    i.putExtra("reload", true);
+                    setResult(RESULT_OK, i);
                     finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "保存地址失败", Toast.LENGTH_SHORT).show();
