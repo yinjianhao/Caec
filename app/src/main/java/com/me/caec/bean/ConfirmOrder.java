@@ -31,7 +31,7 @@ public class ConfirmOrder {
         this.data = data;
     }
 
-    public static class DataBean implements Serializable{
+    public static class DataBean implements Serializable {
 
         private ReceiptBean receipt;
 
@@ -93,7 +93,7 @@ public class ConfirmOrder {
             this.receiving = receiving;
         }
 
-        public static class ReceiptBean {
+        public static class ReceiptBean implements Serializable {
             private String company;
             private String type;
             private String header;
@@ -123,7 +123,7 @@ public class ConfirmOrder {
             }
         }
 
-        public static class UserBean {
+        public static class UserBean implements Serializable {
             private String nickName;
             private String mobile;
 
@@ -144,7 +144,7 @@ public class ConfirmOrder {
             }
         }
 
-        public static class CarsBean {
+        public static class CarsBean implements Serializable {
             private String optionalInfo;
             private int id;
             private float price;
@@ -237,7 +237,7 @@ public class ConfirmOrder {
             }
         }
 
-        public static class PartsBean {
+        public static class PartsBean implements Serializable {
             private int id;
             private float price;
             private int count;
@@ -423,7 +423,7 @@ public class ConfirmOrder {
             }
         }
 
-        public static class ReceivingBean {
+        public static class ReceivingBean implements Serializable {
             private int provinceId;
             private String id;
             private String zip;

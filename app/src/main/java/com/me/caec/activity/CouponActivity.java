@@ -61,6 +61,10 @@ public class CouponActivity extends BaseActivity implements View.OnClickListener
         Intent intent = getIntent();
         couponId = intent.getStringExtra("couponId");
         ConfirmOrder.DataBean dataBean = (ConfirmOrder.DataBean) intent.getSerializableExtra("data");
+
+        coupons = new ArrayList<>();
+        unCoupons = new ArrayList<>();
+
         List<ConfirmOrder.DataBean.CouponBean> all = dataBean.getCoupon();
         for (ConfirmOrder.DataBean.CouponBean coupon : all) {
             if (coupon.isEnable()) {
@@ -89,7 +93,7 @@ public class CouponActivity extends BaseActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_back:
-                finish();
+                ((CouponFragment)fragmentList.get(0)).goBack();
                 break;
             default:
                 break;
@@ -117,5 +121,17 @@ public class CouponActivity extends BaseActivity implements View.OnClickListener
             Log.d("getItem", position + "");
             return fragmentList.get(position);
         }
+    }
+
+    public List<ConfirmOrder.DataBean.CouponBean> getCoupons() {
+        return coupons;
+    }
+
+    public String getCouponId() {
+        return couponId;
+    }
+
+    public List<ConfirmOrder.DataBean.CouponBean> getUnCoupons() {
+        return unCoupons;
     }
 }

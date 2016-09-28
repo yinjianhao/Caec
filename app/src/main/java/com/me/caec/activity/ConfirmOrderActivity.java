@@ -19,8 +19,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
 import com.me.caec.bean.ConfirmOrder;
+import com.me.caec.bean.ConfirmedOrder;
 import com.me.caec.globle.BaseClient;
 import com.me.caec.globle.RequestUrl;
 import com.me.caec.utils.DpTransforUtils;
@@ -33,6 +36,7 @@ import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,8 +91,6 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
     private final int TYPE_INVOICE = 4;
     private final int TYPE_COUPON = 5;
 
-    private final int TAG_DISTRIBUTOR = 1;
-
     private ConfirmOrder.DataBean dataBean;
 
     private float orderTotalPrice = 0;  //订单总额(包含运费)
@@ -101,13 +103,15 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
 
     private String[] orderMsgs;
 
-    private String receivingId;
+    private String receivingId = "";
 
-    private int invoiceType;
+    private int invoiceType = -1;
 
-    private String invoiceCompony;
+    private String invoiceCompony = "";
 
-    private String couponId;
+    private String partMsg = "";
+
+    private String couponId = "";
 
     @Override
     public void initContentView() {
@@ -119,6 +123,7 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         tvTitle.setText("确认订单");
         tvBack.setOnClickListener(this);
         llCoupon.setOnClickListener(this);
+        btnConfirm.setOnClickListener(this);
 
         Intent intent = getIntent();
         String params = intent.getStringExtra("params");
@@ -139,9 +144,137 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             case R.id.ll_coupon:
                 chooseCoupon();
                 break;
+            case R.id.btn_confirm:
+                confirm();
+                break;
             default:
                 break;
         }
+    }
+
+    private void confirm() {
+        String result = checkOk();
+
+        if (!result.isEmpty()) {
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JSONArray cars = new JSONArray();
+        JSONArray parts = new JSONArray();
+
+        List<ConfirmOrder.DataBean.CarsBean> carsBeen = dataBean.getCars();
+        for (int i = 0, size = carsBeen.size(); i < size; i++) {
+            ConfirmOrder.DataBean.CarsBean carBeen = carsBeen.get(i);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("goodsId", carBeen.getId());
+            jsonObject.put("goodsCount", carBeen.getCount());
+            jsonObject.put("optionalIds", "[]");
+            jsonObject.put("orderMsg", distributors.get(String.valueOf(i)));
+            jsonObject.put("dealerId", orderMsgs[i] == null ? "" : orderMsgs[i]);
+
+            BuyType buyType = buyTypes.get(String.valueOf(i));
+            jsonObject.put("type", buyType.type);
+            jsonObject.put("receiver", buyType.receiver);
+            jsonObject.put("mobile", buyType.mobile);
+            jsonObject.put("no", buyType.no);
+            jsonObject.put("name", buyType.name);
+
+            cars.add(jsonObject);
+        }
+
+        List<ConfirmOrder.DataBean.PartsBean> partsBeen = dataBean.getParts();
+        for (int i = 0, size = partsBeen.size(); i < size; i++) {
+            ConfirmOrder.DataBean.PartsBean partBean = partsBeen.get(i);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", partBean.getId());
+            jsonObject.put("count", partBean.getId());
+
+            parts.add(jsonObject);
+        }
+
+        JSONObject goods = new JSONObject();
+        goods.put("goods", parts);
+        goods.put("orderMsg", partMsg);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("from", 1);
+        map.put("cars", cars.toString());
+        map.put("goods", goods.toString());
+
+        final JSONObject receipt = new JSONObject();
+
+        if (invoiceType != -1) {
+            receipt.put("type", 1);
+            receipt.put("header", invoiceType);
+            receipt.put("company", invoiceCompony);
+        }
+        map.put("receipt", receipt.toString());
+
+        JSONObject receiving = new JSONObject();
+        receiving.put("receivingId", receivingId);
+        map.put("receiving", receiving.toString());
+
+        if (couponId.isEmpty()) {
+            map.put("coupon", "[]");
+        } else {
+            map.put("coupon", Arrays.toString(new String[]{couponId}));
+        }
+
+        BaseClient.post(this, RequestUrl.CONFIRM_ORDER_URL, map, ConfirmedOrder.class, new BaseClient.BaseCallBack() {
+            @Override
+            public void onSuccess(Object result) {
+                ConfirmedOrder data = (ConfirmedOrder) result;
+                if (data.getResult() == 0) {
+                    Log.d("ConfirmOrderActivity", data.getData().getOrderId());
+                } else {
+                    Toast.makeText(getApplicationContext(), "提交失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                Toast.makeText(getApplicationContext(), "数据获取失败,请检查网络", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(Callback.CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    private String checkOk() {
+        int size = dataBean.getCars().size();
+
+        for (int i = 0; i < size; i++) {
+            if (distributors.get(String.valueOf(i)) == null) {
+                return "请选择提车经销商";
+            }
+        }
+
+        for (int i = 0; i < size; i++) {
+            if (buyTypes.get(String.valueOf(i)) == null) {
+                return "请填写提车人信息";
+            }
+        }
+
+        if (receivingId == null || receivingId.isEmpty()) {
+            return "请选择收货人信息";
+        }
+
+        if (!cbCheck.isChecked()) {
+            return "请勾选同意长安商城服务条款";
+        }
+
+        return "";
     }
 
     @Override
@@ -390,6 +523,7 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         LinearLayout llInvoice = (LinearLayout) partView.findViewById(R.id.ll_invoice);
         TextView tvPriceCount = (TextView) partView.findViewById(R.id.tv_price_count);
         TextView tvCarriage = (TextView) partView.findViewById(R.id.tv_carriage);
+        EditText etMsg = (EditText) partView.findViewById(R.id.et_msg);
 
         llReceiver.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -413,6 +547,23 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
                 i.putExtra("companyName", invoiceCompony);
 
                 startActivityForResult(i, TYPE_INVOICE);
+            }
+        });
+
+        etMsg.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                partMsg = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
