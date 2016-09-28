@@ -1,16 +1,27 @@
 package com.me.caec.activity;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.me.caec.R;
+import com.me.caec.bean.ConfirmOrder;
+import com.me.caec.fragment.CouponFragment;
+import com.me.caec.fragment.UnCouponFragment;
 
 import org.xutils.view.annotation.ViewInject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CouponActivity extends BaseActivity implements View.OnClickListener {
 
@@ -30,6 +41,13 @@ public class CouponActivity extends BaseActivity implements View.OnClickListener
 
     private Adapter adapter;
 
+    private List<Fragment> fragmentList;
+
+    private String couponId;    //选中
+
+    private List<ConfirmOrder.DataBean.CouponBean> coupons;    //可用
+    private List<ConfirmOrder.DataBean.CouponBean> unCoupons;  //不可用
+
     @Override
     public void initContentView() {
         setContentView(R.layout.activity_coupon);
@@ -40,7 +58,23 @@ public class CouponActivity extends BaseActivity implements View.OnClickListener
         tvTitle.setText("代金券");
         tvBack.setOnClickListener(this);
 
-        adapter = new Adapter();
+        Intent intent = getIntent();
+        couponId = intent.getStringExtra("couponId");
+        ConfirmOrder.DataBean dataBean = (ConfirmOrder.DataBean) intent.getSerializableExtra("data");
+        List<ConfirmOrder.DataBean.CouponBean> all = dataBean.getCoupon();
+        for (ConfirmOrder.DataBean.CouponBean coupon : all) {
+            if (coupon.isEnable()) {
+                coupons.add(coupon);
+            } else {
+                unCoupons.add(coupon);
+            }
+        }
+
+        fragmentList = new ArrayList<>();
+        fragmentList.add(new CouponFragment());
+        fragmentList.add(new UnCouponFragment());
+
+        adapter = new Adapter(getSupportFragmentManager());
         vpPager.setAdapter(adapter);
         tlTab.setupWithViewPager(vpPager);
         tlTab.setTabMode(TabLayout.MODE_FIXED);
@@ -62,7 +96,11 @@ public class CouponActivity extends BaseActivity implements View.OnClickListener
         }
     }
 
-    private class Adapter extends PagerAdapter {
+    private class Adapter extends FragmentPagerAdapter {
+
+        public Adapter(FragmentManager fm) {
+            super(fm);
+        }
 
         @Override
         public int getCount() {
@@ -70,25 +108,14 @@ public class CouponActivity extends BaseActivity implements View.OnClickListener
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View view = null;
-
-            return view;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
-        }
-
-        @Override
         public CharSequence getPageTitle(int position) {
             return title[position];
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Log.d("getItem", position + "");
+            return fragmentList.get(position);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.me.caec.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class ConfirmOrder {
         this.data = data;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
 
         private ReceiptBean receipt;
 
@@ -320,7 +321,7 @@ public class ConfirmOrder {
             }
         }
 
-        public static class CouponBean {
+        public static class CouponBean implements Serializable {
             private String typeName;
             private String id;
             private String startDate;

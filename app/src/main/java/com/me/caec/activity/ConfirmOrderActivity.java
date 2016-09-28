@@ -78,6 +78,9 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
     @ViewInject(R.id.tv_coupon)
     private TextView tvCoupon;
 
+    @ViewInject(R.id.ll_coupon)
+    private LinearLayout llCoupon;
+
     private final int TYPE_DISTRIBUTOR = 1;
     private final int TYPE_BUY = 2;
     private final int TYPE_ADDRESS = 3;
@@ -115,6 +118,7 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
     public void render() {
         tvTitle.setText("确认订单");
         tvBack.setOnClickListener(this);
+        llCoupon.setOnClickListener(this);
 
         Intent intent = getIntent();
         String params = intent.getStringExtra("params");
@@ -131,6 +135,9 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         switch (v.getId()) {
             case R.id.btn_back:
                 finish();
+                break;
+            case R.id.ll_coupon:
+                chooseCoupon();
                 break;
             default:
                 break;
@@ -202,13 +209,32 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
                     couponId = extras.getString("id");
                     float price = extras.getFloat("price");
 
-                    tvCoupon.setTextColor(getResources().getColor(R.color.baseRed));
-                    tvCoupon.setText("-¥" + NumberUtils.toFixed2(price));
+                    if (!couponId.isEmpty()) {
+                        tvCoupon.setTextColor(getResources().getColor(R.color.baseRed));
+                        tvCoupon.setText("-¥" + NumberUtils.toFixed2(price));
+                        String s = "¥" + NumberUtils.toFixed2(orderTotalPrice - price);
+                        tvOrderPrice.setText(s);
+                        tvTotalPrice.setText(s);
+                    } else {
+                        tvCoupon.setTextColor(getResources().getColor(R.color.color333));
+                        tvCoupon.setText("未使用");
+                        tvOrderPrice.setText("¥" + NumberUtils.toFixed2(orderTotalPrice));
+                        tvTotalPrice.setText("¥" + NumberUtils.toFixed2(orderTotalPrice));
+                    }
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    private void chooseCoupon() {
+        Intent i = new Intent(this, CouponActivity.class);
+        i.putExtra("couponId", couponId);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("data", dataBean);
+        i.putExtras(bundle);
+        startActivityForResult(i, TYPE_COUPON);
     }
 
     /**
