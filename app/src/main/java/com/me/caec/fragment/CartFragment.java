@@ -344,7 +344,10 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
         }
 
         JSONArray jsonArray = new JSONArray();
-        for (int position : CheckedList) {
+        String cartId = "[";
+
+        for (int i = 0, l = CheckedList.size(); i < l; i++) {
+            int position = CheckedList.get(i);
             CartList.DataBean dataBean = cartList.get(position);
             JSONObject jsonObject = new JSONObject();
 
@@ -352,10 +355,18 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
             jsonObject.put("count", dataBean.getCount());
             jsonObject.put("optionalInfo", "[]");
             jsonArray.add(jsonObject);
+
+            if (i == 0) {
+                cartId = cartId + "\"" + cartList.get(0).getCartItemId() + "\"";
+            } else {
+                cartId = cartId + ",\"" + cartList.get(i).getCartItemId() + "\"";
+            }
         }
+        cartId += "]";
 
         Intent i = new Intent(getActivity(), ConfirmOrderActivity.class);
         i.putExtra("params", jsonArray.toString());
+        i.putExtra("cartId", cartId);
         getActivity().startActivity(i);
     }
 

@@ -1,7 +1,6 @@
 package com.me.caec.activity;
 
 import android.content.Intent;
-import android.content.res.ObbInfo;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me.caec.R;
+import com.me.caec.bean.BaseBean;
 import com.me.caec.bean.ConfirmOrder;
 import com.me.caec.bean.ConfirmedOrder;
 import com.me.caec.globle.BaseClient;
@@ -35,7 +35,6 @@ import org.xutils.common.Callback;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -93,6 +92,8 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
 
     private ConfirmOrder.DataBean dataBean;
 
+    private String cartId;
+
     private float orderTotalPrice = 0;  //订单总额(包含运费)
 
     private LinearLayout currentVIew;
@@ -127,6 +128,7 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
 
         Intent intent = getIntent();
         String params = intent.getStringExtra("params");
+        cartId = intent.getStringExtra("cartId");
         getConfirmOrderList(params);
     }
 
@@ -171,8 +173,8 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             jsonObject.put("goodsId", carBeen.getId());
             jsonObject.put("goodsCount", carBeen.getCount());
             jsonObject.put("optionalIds", "[]");
-            jsonObject.put("orderMsg", distributors.get(String.valueOf(i)));
-            jsonObject.put("dealerId", orderMsgs[i] == null ? "" : orderMsgs[i]);
+            jsonObject.put("orderMsg", orderMsgs[i] == null ? "" : orderMsgs[i]);
+            jsonObject.put("dealerId", distributors.get(String.valueOf(i)).id);
 
             BuyType buyType = buyTypes.get(String.valueOf(i));
             jsonObject.put("type", buyType.type);
@@ -190,7 +192,7 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("id", partBean.getId());
-            jsonObject.put("count", partBean.getId());
+            jsonObject.put("count", partBean.getCount());
 
             parts.add(jsonObject);
         }
@@ -200,12 +202,9 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         goods.put("orderMsg", partMsg);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("from", 1);
-        map.put("cars", cars.toString());
-        map.put("goods", goods.toString());
 
+        //发票
         final JSONObject receipt = new JSONObject();
-
         if (invoiceType != -1) {
             receipt.put("type", 1);
             receipt.put("header", invoiceType);
@@ -213,22 +212,32 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
         }
         map.put("receipt", receipt.toString());
 
+        //收货人
         JSONObject receiving = new JSONObject();
         receiving.put("receivingId", receivingId);
         map.put("receiving", receiving.toString());
 
+        //优惠卷
         if (couponId.isEmpty()) {
             map.put("coupon", "[]");
         } else {
             map.put("coupon", Arrays.toString(new String[]{couponId}));
         }
 
+        map.put("from", 1);
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
+        map.put("cars", cars.toString());
+        map.put("goods", goods.toString());
+
+
         BaseClient.post(this, RequestUrl.CONFIRM_ORDER_URL, map, ConfirmedOrder.class, new BaseClient.BaseCallBack() {
             @Override
             public void onSuccess(Object result) {
                 ConfirmedOrder data = (ConfirmedOrder) result;
                 if (data.getResult() == 0) {
+                    cleanCart();
                     Log.d("ConfirmOrderActivity", data.getData().getOrderId());
+
                 } else {
                     Toast.makeText(getApplicationContext(), "提交失败", Toast.LENGTH_SHORT).show();
                 }
@@ -247,6 +256,33 @@ public class ConfirmOrderActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void onFinished() {
 
+            }
+        });
+    }
+
+    /**
+     * 购物车删除提交的商品
+     */
+    private void cleanCart() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", PreferencesUtils.getString(this, "token", ""));
+        map.put("cartItemIds", cartId);
+
+        BaseClient.post(this, RequestUrl.CART_DELETE_URL, map, BaseBean.class, new BaseClient.BaseCallBack() {
+            @Override
+            public void onSuccess(Object result) {
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+            }
+
+            @Override
+            public void onCancelled(Callback.CancelledException cex) {
+            }
+
+            @Override
+            public void onFinished() {
             }
         });
     }
