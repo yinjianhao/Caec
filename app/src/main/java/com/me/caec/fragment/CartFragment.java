@@ -2,6 +2,7 @@ package com.me.caec.fragment;
 
 import android.content.Intent;
 import android.graphics.Paint;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,8 +58,17 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     @ViewInject(R.id.tv_edit)
     private TextView tvEdit;
 
+    @ViewInject(R.id.srl_refresh)
+    private SwipeRefreshLayout srlRefresh;
+
     @ViewInject(R.id.lv_cart)
     private ListView lvCart;
+
+//    @ViewInject(R.id.srl_empty)
+//    private SwipeRefreshLayout srlEmpty;
+//
+//    @ViewInject(R.id.tv_empty)
+//    private TextView tvEmpty;
 
     @ViewInject(R.id.cb_check_all)
     private CheckBox cbCheckAll;
@@ -86,6 +96,8 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
     //删除时,当前选中的
     private List<Integer> deleteList = new ArrayList<>();
 
+    private boolean isRefresh = false;
+
     @Override
     public void initData() {
         tvEdit.setOnClickListener(this);
@@ -93,6 +105,7 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
         btnDelete.setOnClickListener(this);
 
         adapter = new Adapter();
+//        lvCart.setEmptyView(srlEmpty);
         lvCart.setAdapter(adapter);
 
         lvCart.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -136,6 +149,15 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
                     countPrice();
                 }
                 adapter.notifyDataSetChanged();
+            }
+        });
+
+        srlRefresh.setColorSchemeColors(R.color.baseBlue);
+        srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh = true;
+                getCartList();
             }
         });
 
@@ -285,7 +307,10 @@ public class CartFragment extends BaseFragment implements View.OnClickListener {
 
             @Override
             public void onFinished() {
-
+                if (isRefresh) {
+                    srlRefresh.setRefreshing(false);
+                    isRefresh = false;
+                }
             }
         });
     }
