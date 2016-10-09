@@ -10,6 +10,9 @@ public class RequestUrl {
     public static final String SERVICE_URL = "http://ssl.mall.changan.com.cn";
 //    public static final String SERVICE_URL = "http://172.26.1.79";
 
+    //首页
+    public static final String HOME_ACTIVITY = SERVICE_URL + "/main/actives/list";
+
     //图片上传
     public static final String UPLOAD_IMAGE_URL = SERVICE_URL + "/member/attachment/base64/upload";
 
