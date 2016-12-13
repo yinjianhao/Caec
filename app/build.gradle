@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "com.me.caec"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -22,13 +22,12 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:design:25.0.1'
     compile 'org.xutils:xutils:3.3.36'
     compile 'com.alibaba:fastjson:1.1.52.android'
     compile 'com.google.code.gson:gson:2.6.2'
     compile files('src/main/lib/bcprov-ext-jdk15on-1.53.jar')
     compile files('src/main/lib/commons-codec-1.10.jar')
-    compile project(':pullToRefresh')
 }

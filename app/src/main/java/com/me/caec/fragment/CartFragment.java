@@ -20,9 +20,6 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.handmark.pulltorefresh.library.ILoadingLayout;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.me.caec.R;
 import com.me.caec.activity.ConfirmOrderActivity;
 import com.me.caec.bean.BaseBean;

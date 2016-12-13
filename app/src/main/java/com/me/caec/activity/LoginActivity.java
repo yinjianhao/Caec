@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(Object result) {
                 Login loginData = (Login) result;
 
-                if (loginData.getResult() == 0) {
+                if (loginData.getResult() == 0 || loginData.getResult() == 109) {
                     Login.DataBean dataBean = loginData.getData();
 
                     //保存用户信息

@@ -55,5 +55,4 @@
 
         <activity android:name=".activity.PayActivity" />
     </application>
-
 </manifest>

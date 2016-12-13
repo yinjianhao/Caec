@@ -13,10 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.me.caec.R;
 
 import org.xutils.view.annotation.ViewInject;
@@ -50,11 +46,6 @@ public class InvoiceActivity extends BaseActivity implements View.OnClickListene
     private int type;
 
     private String[] typeArray = new String[]{"个人", "公司"};
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     public void initContentView() {
