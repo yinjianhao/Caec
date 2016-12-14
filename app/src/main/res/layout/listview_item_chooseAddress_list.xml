@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/cb_check"
-        android:text="尹剑浩"
+        android:text="扎鲁特"
         android:textSize="16sp" />
 
     <TextView
@@ -32,7 +32,7 @@
         android:layout_marginStart="10dp"
         android:layout_toEndOf="@+id/tv_receiver"
         android:layout_toRightOf="@+id/tv_receiver"
-        android:text="18680751843"
+        android:text="15123096448"
         android:textSize="16sp" />
 
     <TextView
@@ -52,5 +52,5 @@
         android:layout_alignLeft="@+id/tv_receiver"
         android:layout_below="@+id/tv_receiver"
         android:layout_marginTop="12dp"
-        android:text="重庆重庆市江北区建新东路50好玻璃门  400020" />
+        android:text="重庆重庆市江北区  400020" />
 </RelativeLayout>
