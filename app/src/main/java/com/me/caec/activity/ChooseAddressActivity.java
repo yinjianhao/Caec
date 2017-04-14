@@ -167,7 +167,7 @@ public class ChooseAddressActivity extends BaseActivity implements View.OnClickL
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder;
             if (convertView == null) {
-                convertView = View.inflate(ChooseAddressActivity.this, R.layout.listview_item_chooseaddress_list, null);
+                convertView = View.inflate(ChooseAddressActivity.this, R.layout.listview_item_choose_address_list, null);
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
             } else {
